@@ -188,4 +188,21 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
         return Date.from(zdt.toInstant());
     }
+
+    /**
+     * 以指定的格式返回当前日期
+     * @param fromat
+     * @return Date
+     */
+    public static Date getDateNowDate(String fromat) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(fromat);
+        Date date = null;
+        try {
+            date = simpleDateFormat.parse(simpleDateFormat.format(new Date()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+
 }

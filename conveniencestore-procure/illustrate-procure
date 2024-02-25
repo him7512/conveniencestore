@@ -1,0 +1,3 @@
+采购模块开发日志：
+    2024/2/21   完成了PURCHASE_FORM与PURCHASE_REGISTRATION_FORM数据库表的创建
+                创建了采购模块

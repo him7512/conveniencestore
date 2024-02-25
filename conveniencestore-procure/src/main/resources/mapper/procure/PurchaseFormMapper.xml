@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.procure.mapper.PurchaseFormMapper">
+
+    <resultMap type="PurchaseForm" id="PurchaseFormResult">
+        <result property="purId"    column="pur_id"    />
+        <result property="purCode"    column="pur_code"    />
+        <result property="purRegCode"    column="pur_reg_code"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="zoningCode"    column="zoning_code"    />
+        <result property="goodsName"    column="goods_name"    />
+        <result property="firstQuantity"    column="first_quantity"    />
+        <result property="firstMeasurement"    column="first_measurement"    />
+        <result property="secondQuantity"    column="second_quantity"    />
+        <result property="secondMeasurement"    column="second_measurement"    />
+        <result property="createDate"    column="create_date"    />
+        <result property="updateDate"    column="update_date"    />
+        <result property="purStatus"    column="pur_status"    />
+        <result property="goodsComment"    column="goods_comment"    />
+        <result property="purUnitTotalPrice"    column="pur_unit_total_price"    />
+        <result property="purTotalPrice"    column="pur_total_price"    />
+        <result property="purUnit"    column="pur_unit"    />
+    </resultMap>
+
+    <sql id="selectPurchaseFormVo">
+        select pur_id, pur_code, pur_reg_code, dept_id, zoning_code, goods_name, first_quantity, first_measurement, second_quantity, second_measurement, create_date, update_date, pur_status, goods_comment, pur_unit_total_price, pur_total_price, pur_unit from purchase_form
+    </sql>
+
+    <select id="selectPurchaseFormList" parameterType="PurchaseForm" resultMap="PurchaseFormResult">
+        <include refid="selectPurchaseFormVo"/>
+        <where>
+            <if test="purCode != null  and purCode != ''"> and pur_code = #{purCode}</if>
+            <if test="purRegCode != null  and purRegCode != ''"> and pur_reg_code = #{purRegCode}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="zoningCode != null  and zoningCode != ''"> and zoning_code = #{zoningCode}</if>
+            <if test="goodsName != null  and goodsName != ''"> and goods_name like concat(concat('%', #{goodsName}), '%')</if>
+            <if test="firstQuantity != null "> and first_quantity = #{firstQuantity}</if>
+            <if test="firstMeasurement != null  and firstMeasurement != ''"> and first_measurement = #{firstMeasurement}</if>
+            <if test="secondQuantity != null "> and second_quantity = #{secondQuantity}</if>
+            <if test="secondMeasurement != null  and secondMeasurement != ''"> and second_measurement = #{secondMeasurement}</if>
+            <if test="params.beginCreateDate != null and params.beginCreateDate != '' and params.endCreateDate != null and params.endCreateDate != ''"> and create_date between TO_DATE(#{params.beginCreateDate}, 'YYYY-MM-DD') and TO_DATE(#{params.endCreateDate}, 'YYYY-MM-DD')</if>
+            <if test="params.beginUpdateDate != null and params.beginUpdateDate != '' and params.endUpdateDate != null and params.endUpdateDate != ''"> and update_date between TO_DATE(#{params.beginUpdateDate}, 'YYYY-MM-DD') and TO_DATE(#{params.endUpdateDate}, 'YYYY-MM-DD')</if>
+            <if test="purStatus != null  and purStatus != ''"> and pur_status = #{purStatus}</if>
+            <if test="goodsComment != null  and goodsComment != ''"> and goods_comment = #{goodsComment}</if>
+            <if test="purUnitTotalPrice != null "> and pur_unit_total_price = #{purUnitTotalPrice}</if>
+            <if test="purTotalPrice != null "> and pur_total_price = #{purTotalPrice}</if>
+            <if test="purUnit != null  and purUnit != ''"> and pur_unit = #{purUnit}</if>
+        </where>
+    </select>
+
+    <select id="selectPurchaseFormByPurId" parameterType="Long" resultMap="PurchaseFormResult">
+        <include refid="selectPurchaseFormVo"/>
+        where pur_id = #{purId}
+    </select>
+
+    <insert id="insertPurchaseForm" parameterType="PurchaseForm">
+        <selectKey keyProperty="purId" resultType="long" order="BEFORE">
+            SELECT seq_purchase_form.NEXTVAL as purId FROM DUAL
+        </selectKey>
+        insert into purchase_form
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="purId != null">pur_id,</if>
+            <if test="purCode != null">pur_code,</if>
+            <if test="purRegCode != null">pur_reg_code,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="zoningCode != null">zoning_code,</if>
+            <if test="goodsName != null and goodsName != ''">goods_name,</if>
+            <if test="firstQuantity != null">first_quantity,</if>
+            <if test="firstMeasurement != null and firstMeasurement != ''">first_measurement,</if>
+            <if test="secondQuantity != null">second_quantity,</if>
+            <if test="secondMeasurement != null">second_measurement,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+            <if test="purStatus != null and purStatus != ''">pur_status,</if>
+            <if test="goodsComment != null">goods_comment,</if>
+            <if test="purUnitTotalPrice != null">pur_unit_total_price,</if>
+            <if test="purTotalPrice != null">pur_total_price,</if>
+            <if test="purUnit != null">pur_unit,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="purId != null">#{purId},</if>
+            <if test="purCode != null">#{purCode},</if>
+            <if test="purRegCode != null">#{purRegCode},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="zoningCode != null">#{zoningCode},</if>
+            <if test="goodsName != null and goodsName != ''">#{goodsName},</if>
+            <if test="firstQuantity != null">#{firstQuantity},</if>
+            <if test="firstMeasurement != null and firstMeasurement != ''">#{firstMeasurement},</if>
+            <if test="secondQuantity != null">#{secondQuantity},</if>
+            <if test="secondMeasurement != null">#{secondMeasurement},</if>
+            <if test="createDate != null">#{createDate},</if>
+            <if test="updateDate != null">#{updateDate},</if>
+            <if test="purStatus != null and purStatus != ''">#{purStatus},</if>
+            <if test="goodsComment != null">#{goodsComment},</if>
+            <if test="purUnitTotalPrice != null">#{purUnitTotalPrice},</if>
+            <if test="purTotalPrice != null">#{purTotalPrice},</if>
+            <if test="purUnit != null">#{purUnit},</if>
+        </trim>
+    </insert>
+
+    <update id="updatePurchaseForm" parameterType="PurchaseForm">
+        update purchase_form
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="purCode != null">pur_code = #{purCode},</if>
+            <if test="purRegCode != null">pur_reg_code = #{purRegCode},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="zoningCode != null">zoning_code = #{zoningCode},</if>
+            <if test="goodsName != null and goodsName != ''">goods_name = #{goodsName},</if>
+            <if test="firstQuantity != null">first_quantity = #{firstQuantity},</if>
+            <if test="firstMeasurement != null and firstMeasurement != ''">first_measurement = #{firstMeasurement},</if>
+            <if test="secondQuantity != null">second_quantity = #{secondQuantity},</if>
+            <if test="secondQuantity == null">second_quantity = NULL,</if>
+            <if test="secondMeasurement != null">second_measurement = #{secondMeasurement},</if>
+            <if test="secondMeasurement == null">second_measurement = NULL,</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
+            <if test="updateDate != null">update_date = #{updateDate},</if>
+            <if test="purStatus != null and purStatus != ''">pur_status = #{purStatus},</if>
+            <if test="goodsComment != null">goods_comment = #{goodsComment},</if>
+            <if test="goodsComment == null">goods_comment = NULL,</if>
+            <if test="purUnitTotalPrice != null">pur_unit_total_price = #{purUnitTotalPrice},</if>
+            <if test="purUnitTotalPrice == null">pur_unit_total_price = NULL,</if>
+            <if test="purTotalPrice != null">pur_total_price = #{purTotalPrice},</if>
+            <if test="purUnit != null">pur_unit = #{purUnit},</if>
+            <if test="purUnit == null">pur_unit = NULL,</if>
+        </trim>
+        where pur_id = #{purId}
+    </update>
+
+    <delete id="deletePurchaseFormByPurId" parameterType="Long">
+        delete from purchase_form where pur_id = #{purId}
+    </delete>
+
+    <delete id="deletePurchaseFormByPurIds" parameterType="String">
+        delete from purchase_form where pur_id in
+        <foreach item="purId" collection="array" open="(" separator="," close=")">
+            #{purId}
+        </foreach>
+    </delete>
+</mapper>

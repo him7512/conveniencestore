@@ -1,8 +1,10 @@
 package com.liuqi;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
 
 /**
  * 启动程序
@@ -10,6 +12,10 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
  * @author ruoyi
  */
 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
+//新建模块需要添加包扫描
+@ComponentScan({ "com.liuqi.*"})
+//使用注解sql时记得添加mapper扫描
+@MapperScan("com.liuqi.mapper")
 public class RuoYiApplication
 {
     public static void main(String[] args)

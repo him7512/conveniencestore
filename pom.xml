@@ -30,6 +30,8 @@
         <poi.version>4.1.2</poi.version>
         <velocity.version>2.3</velocity.version>
         <oracle.version>10.2.0.4.0</oracle.version>
+        <mybatis-plus>3.5.2</mybatis-plus>
+        <junit>4.13.2</junit>
     </properties>
 
     <!-- 依赖声明 -->
@@ -184,6 +186,28 @@
                 <version>${liuqi.version}</version>
             </dependency>
 
+            <!-- 采购模块-->
+            <dependency>
+                <groupId>com.liuqi</groupId>
+                <artifactId>conveniencestore-procure</artifactId>
+                <version>${liuqi.version}</version>
+            </dependency>
+
+            <!-- Mybatis-plus-->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus}</version>
+            </dependency>
+
+            <!-- junit-->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit}</version>
+                <scope>test</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -194,6 +218,7 @@
         <module>conveniencestore-quartz</module>
         <module>conveniencestore-generator</module>
         <module>conveniencestore-common</module>
+        <module>conveniencestore-procure</module>
     </modules>
     <packaging>pom</packaging>
 

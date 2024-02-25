@@ -1,0 +1,36 @@
+文件结构
+com.liuqi
+├── common            // 工具类
+│       └── annotation                    // 自定义注解
+│       └── config                        // 全局配置
+│       └── constant                      // 通用常量
+│       └── core                          // 核心控制
+│       └── enums                         // 通用枚举
+│       └── exception                     // 通用异常
+│       └── json                          // JSON数据处理
+│       └── utils                         // 通用类处理
+│       └── xss                           // XSS过滤处理
+├── framework         // 框架核心
+│       └── aspectj                       // 注解实现
+│       └── config                        // 系统配置
+│       └── datasource                    // 数据权限
+│       └── interceptor                   // 拦截器
+│       └── manager                       // 异步处理
+│       └── shiro                         // 权限控制
+│       └── web                           // 前端控制
+├── conveniencestore-generator   // 代码生成（不用可移除）
+├── conveniencestore-quartz      // 定时任务（不用可移除）
+├── conveniencestore-system      // 系统代码
+├── conveniencestore-admin       // 后台服务
+├── conveniencestore-procure     // 采购模块
+├── conveniencestore-      // 其他模块
+├── conveniencestore-      // 其他模块
+├── conveniencestore-      // 其他模块
+├── conveniencestore-      // 其他模块
+├── conveniencestore-      // 其他模块
+├── conveniencestore-      // 其他模块
+├── conveniencestore-      // 其他模块
+├── conveniencestore-      // 其他模块
+├── conveniencestore-      // 其他模块
+├── conveniencestore-      // 其他模块
+├── conveniencestore-      // 其他模块

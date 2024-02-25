@@ -68,6 +68,12 @@
             <artifactId>conveniencestore-generator</artifactId>
         </dependency>
 
+        <!-- 采购模块-->
+        <dependency>
+            <groupId>com.liuqi</groupId>
+            <artifactId>conveniencestore-procure</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

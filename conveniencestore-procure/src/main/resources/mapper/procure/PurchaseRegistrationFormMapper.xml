@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.procure.mapper.PurchaseRegistrationFormMapper">
+
+    <resultMap type="PurchaseRegistrationForm" id="PurchaseRegistrationFormResult">
+        <result property="purRegId"    column="pur_reg_id"    />
+        <result property="purRegCode"    column="pur_reg_code"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="zoningCode"    column="zoning_code"    />
+        <result property="createDate"    column="create_date"    />
+        <result property="updateDate"    column="update_date"    />
+        <result property="purRegStatus"    column="pur_reg_status"    />
+        <result property="reviewbyId"    column="reviewby_id"    />
+        <result property="reviewComment"    column="review_comment"    />
+        <result property="reviewTime"    column="review_time"    />
+    </resultMap>
+
+    <sql id="selectPurchaseRegistrationFormVo">
+        select pur_reg_id, pur_reg_code, dept_id, zoning_code, create_date, update_date, pur_reg_status, reviewby_id, review_comment, review_time from purchase_registration_form
+    </sql>
+
+    <select id="selectPurchaseRegistrationFormList" parameterType="PurchaseRegistrationForm" resultMap="PurchaseRegistrationFormResult">
+        <include refid="selectPurchaseRegistrationFormVo"/>
+        <where>
+            <if test="purRegCode != null  and purRegCode != ''"> and pur_reg_code = #{purRegCode}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="zoningCode != null  and zoningCode != ''"> and zoning_code = #{zoningCode}</if>
+            <if test="params.beginCreateDate != null and params.beginCreateDate != '' and params.endCreateDate != null and params.endCreateDate != ''"> and create_date between TO_DATE(#{params.beginCreateDate}, 'YYYY-MM-DD') and TO_DATE(#{params.endCreateDate}, 'YYYY-MM-DD')</if>
+            <if test="params.beginUpdateDate != null and params.beginUpdateDate != '' and params.endUpdateDate != null and params.endUpdateDate != ''"> and update_date between TO_DATE(#{params.beginUpdateDate}, 'YYYY-MM-DD') and TO_DATE(#{params.endUpdateDate}, 'YYYY-MM-DD')</if>
+            <if test="purRegStatus != null  and purRegStatus != ''"> and pur_reg_status = #{purRegStatus}</if>
+            <if test="reviewbyId != null  and reviewbyId != ''"> and reviewby_id = #{reviewbyId}</if>
+            <if test="reviewComment != null  and reviewComment != ''"> and review_comment = #{reviewComment}</if>
+            <if test="params.beginReviewTime != null and params.beginReviewTime != '' and params.endReviewTime != null and params.endReviewTime != ''"> and review_time between TO_DATE(#{params.beginReviewTime}, 'YYYY-MM-DD') and TO_DATE(#{params.endReviewTime}, 'YYYY-MM-DD')</if>
+        </where>
+    </select>
+
+    <select id="selectPurchaseRegistrationFormByPurRegId" parameterType="Long" resultMap="PurchaseRegistrationFormResult">
+        <include refid="selectPurchaseRegistrationFormVo"/>
+        where pur_reg_id = #{purRegId}
+    </select>
+
+    <insert id="insertPurchaseRegistrationForm" parameterType="PurchaseRegistrationForm">
+        <selectKey keyProperty="purRegId" resultType="long" order="BEFORE">
+            SELECT seq_purchase_registration_form.NEXTVAL as purRegId FROM DUAL
+        </selectKey>
+        insert into purchase_registration_form
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="purRegId != null">pur_reg_id,</if>
+            <if test="purRegCode != null">pur_reg_code,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="zoningCode != null">zoning_code,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+            <if test="purRegStatus != null and purRegStatus != ''">pur_reg_status,</if>
+            <if test="reviewbyId != null">reviewby_id,</if>
+            <if test="reviewComment != null">review_comment,</if>
+            <if test="reviewTime != null">review_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="purRegId != null">#{purRegId},</if>
+            <if test="purRegCode != null">#{purRegCode},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="zoningCode != null">#{zoningCode},</if>
+            <if test="createDate != null">#{createDate},</if>
+            <if test="updateDate != null">#{updateDate},</if>
+            <if test="purRegStatus != null and purRegStatus != ''">#{purRegStatus},</if>
+            <if test="reviewbyId != null">#{reviewbyId},</if>
+            <if test="reviewComment != null">#{reviewComment},</if>
+            <if test="reviewTime != null">#{reviewTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updatePurchaseRegistrationForm" parameterType="PurchaseRegistrationForm">
+        update purchase_registration_form
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="purRegCode != null">pur_reg_code = #{purRegCode},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="zoningCode != null">zoning_code = #{zoningCode},</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
+            <if test="updateDate != null">update_date = #{updateDate},</if>
+            <if test="purRegStatus != null and purRegStatus != ''">pur_reg_status = #{purRegStatus},</if>
+            <if test="reviewbyId != null">reviewby_id = #{reviewbyId},</if>
+            <if test="reviewComment != null">review_comment = #{reviewComment},</if>
+            <if test="reviewTime != null">review_time = #{reviewTime},</if>
+        </trim>
+        where pur_reg_id = #{purRegId}
+    </update>
+
+    <delete id="deletePurchaseRegistrationFormByPurRegId" parameterType="Long">
+        delete from purchase_registration_form where pur_reg_id = #{purRegId}
+    </delete>
+
+    <delete id="deletePurchaseRegistrationFormByPurRegIds" parameterType="String">
+        delete from purchase_registration_form where pur_reg_id in
+        <foreach item="purRegId" collection="array" open="(" separator="," close=")">
+            #{purRegId}
+        </foreach>
+    </delete>
+</mapper>

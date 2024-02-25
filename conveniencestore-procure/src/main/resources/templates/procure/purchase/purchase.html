@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('采购明细登记列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>条目单号：</label>
+                                <input type="text" name="purCode"/>
+                            </li>
+<!--                            <li>-->
+<!--                                <label>物品单号：</label>-->
+<!--                                <input type="text" name="purRegCode"/>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <label>录入物品部门id：</label>-->
+<!--                                <input type="text" name="deptId"/>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <label>录入物品部门所属区划编码：</label>-->
+<!--                                <input type="text" name="zoningCode"/>-->
+<!--                            </li>-->
+                            <li>
+                                <label>物品名称：</label>
+                                <input type="text" name="goodsName"/>
+                            </li>
+<!--                            <li>-->
+<!--                                <label>物品第一数量：</label>-->
+<!--                                <input type="text" name="firstQuantity"/>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <label>物品第一计量单位：</label>-->
+<!--                                <input type="text" name="firstMeasurement"/>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <label>物品第二数量：</label>-->
+<!--                                <input type="text" name="secondQuantity"/>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <label>物品第二计量单位：</label>-->
+<!--                                <input type="text" name="secondMeasurement"/>-->
+<!--                            </li>-->
+                            <li class="select-time">
+                                <label>创建时间：</label>
+                                <input type="text" class="time-input" id="startTime_1" placeholder="开始时间" name="params[beginCreateDate]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime_1" placeholder="结束时间" name="params[endCreateDate]"/>
+                            </li>
+                            <li class="select-time">
+                                <label>更新时间：</label>
+                                <input type="text" class="time-input" id="startTime_2" placeholder="开始时间" name="params[beginUpdateDate]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime_2" placeholder="结束时间" name="params[endUpdateDate]"/>
+                            </li>
+                            <li>
+                                <label>登记状态：</label>
+                                <select name="purStatus" th:with="type=${@dict.getType('pur_status')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+<!--                            <li>-->
+<!--                                <label>物品说明：</label>-->
+<!--                                <input type="text" name="goodsComment"/>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <label>单位物品采购价：</label>-->
+<!--                                <input type="text" name="purUnitTotalPrice"/>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <label>物品采购总价：</label>-->
+<!--                                <input type="text" name="purTotalPrice"/>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <label>物品采购单位：</label>-->
+<!--                                <input type="text" name="purUnit"/>-->
+<!--                            </li>-->
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="procure:purchase:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick=modify() shiro:hasPermission="procure:purchase:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick=erasure() shiro:hasPermission="procure:purchase:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="procure:purchase:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+                <a class="btn btn-primary" onclick=generate() shiro:hasPermission="procure:purchase:generate">
+                    <i class="fa fa-plus"></i> 一键生成采购单
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('procure:purchase:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('procure:purchase:remove')}]];
+        var purStatusDatas = [[${@dict.getType('pur_status')}]];
+        var prefix = ctx + "procure/purchase";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "采购明细登记",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'purId',
+                    title: '物品采购条目id(主键)',
+                    visible: false
+                },
+                {
+                    field: 'purCode',
+                    title: '物品采购条目单号',
+                },
+                {
+                    field: 'purRegCode',
+                    title: '物品采购登记单号',
+                    visible: false
+                },
+                {
+                    field: 'deptId',
+                    title: '录入物品部门id',
+                    visible: false
+                },
+                {
+                    field: 'zoningCode',
+                    title: '录入物品部门所属区划编码',
+                    visible: false
+                },
+                {
+                    field: 'goodsName',
+                    title: '物品名称'
+                },
+                {
+                    field: 'firstQuantity',
+                    title: '物品第一数量',
+                    visible: false
+                },
+                {
+                    field: 'firstMeasurement',
+                    title: '物品第一计量单位',
+                    visible: false
+                },
+                {
+                    field: 'firstQuantity',
+                    title: '第一数量',
+                    formatter: function (value, row, index) {
+                        value = value + ' / ' + row.firstMeasurement;
+                        return value;
+                    }
+                },
+                {
+                    field: 'secondQuantity',
+                    title: '物品第二数量',
+                    visible: false
+                },
+                {
+                    field: 'secondMeasurement',
+                    title: '物品第二计量单位',
+                    visible: false
+                },
+                {
+                    field: 'secondQuantity',
+                    title: '第二数量',
+                    formatter: function (value, row, index) {
+                        if (row.secondQuantity == null || row.secondMeasurement == null) {
+                            value = '「空」';
+                        }else {
+                            value = value + ' / ' + row.secondMeasurement;
+                        }
+                        return value;
+                    }
+                },
+                {
+                    field: 'goodsComment',
+                    title: '物品说明'
+                },
+                {
+                    field: 'purUnitTotalPrice',
+                    title: '单位物品采购价',
+                    visible: false
+                },
+                {
+                    field: 'purUnit',
+                    title: '物品采购单位',
+                    visible: false
+                },
+                {
+                    field: "purUnitTotalPrice",
+                    title: '采购单价',
+                    formatter: function (value, row, index) {
+                        if (row.purUnit == null || row.purUnitTotalPrice == null) {
+                            value = "「空」"
+                        } else {
+                            value = value + ' / ' + row.purUnit;
+                        }
+                        return value;
+                    }
+                },
+                {
+                    field: 'purTotalPrice',
+                    title: '物品采购总价'
+                },
+                {
+                    field: 'createDate',
+                    title: '创建时间',
+                },
+                {
+                    field: 'updateDate',
+                    title: '更新时间',
+                },
+                {
+                    field: 'purStatus',
+                    title: '条目状态',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(purStatusDatas, value);
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        // 条目状态(1:制单中;2:待审核;3:退回;4:作废;5:已入库;)
+                        if (row.purStatus == 1 || row.purStatus == 3) {
+                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.purId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                            actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.purId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        }
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+
+        // 一键生成采购单
+        function generate() {
+            var data = {
+                "purIdList": $.table.selectColumns('purId').join(),
+                "purStatusList": $.table.selectColumns('purStatus').join()
+            };
+            $.modal.confirm("是否生成采购单？", function() {
+                $.ajax({
+                    type: "post",
+                    url: prefix + '/generate',
+                    data: data,
+                    beforeSend: function () {
+                        // $.modal.loading("正在处理中，请稍候...");
+                    },
+                    success: function (result) {
+                        if (result.code == web_status.SUCCESS ) {
+                            $.modal.alertSuccess(result.msg);
+                            $.table.refresh();
+                        }  else if (result.code == web_status.WARNING) {
+                            $.modal.alertWarning(result.msg)
+                        }  else {
+                            $.modal.alertError(result.msg);
+                        }
+                    }
+                })
+            })
+        }
+
+        // 修改前判断
+        function modify() {
+            if ($.table.selectColumns('purStatus').join()[0] == 1 ||
+                $.table.selectColumns('purStatus').join()[0] == 3 ||
+                $.table.selectColumns('purStatus').join()[0] == 4) {
+                $.operate.edit();
+            } else if ($.table.selectColumns('purStatus').join()[0] == 2) {
+                $.modal.alertWarning("该条目已经完成制单并移交审核，需待入库审核对其进行驳回后再进行修改。");
+            } else if ($.table.selectColumns('purStatus').join()[0] == 5) {
+                $.modal.alertError("该条目已经完成入库，不可更改。");
+            }
+        }
+
+        // 删除前判断
+        function erasure() {
+            var purStatusList = $.table.selectColumns('purStatus').join().split(",");
+            for (position in purStatusList) {
+                if (purStatusList[position] == 2) {
+                    $.modal.alertWarning("存在完成制单并移交审核的条目，无法对其进行删除。");
+                    return;
+                } else if (purStatusList[position] == 5) {
+                    $.modal.alertWarning("存在已经完成入库的条目，无法对其进行删除。");
+                    return;
+                }
+            }
+            $.operate.removeAll();
+            return;
+        }
+
+
+
+    </script>
+</body>
+</html>

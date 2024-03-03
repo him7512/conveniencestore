@@ -1314,7 +1314,7 @@ var table = {
                 $.modal.closeLoading();
             },
             // 成功回调执行事件（父窗体静默更新）
-            successCallback: function(result) {
+            /*successCallback: function(result) {
                 if (result.code == web_status.SUCCESS) {
                     var parent = activeWindow();
                     if ($.common.isEmpty(parent.table)) {
@@ -1327,6 +1327,28 @@ var table = {
                         $.modal.close();
                         parent.$.modal.msgSuccess(result.msg);
                         parent.$.treeTable.refresh();
+                    }
+                } else if (result.code == web_status.WARNING) {
+                    $.modal.alertWarning(result.msg)
+                }  else {
+                    $.modal.alertError(result.msg);
+                }
+                $.modal.closeLoading();
+                $.modal.enable();
+            },*/
+            successCallback: function(result) {
+                if (result.code == web_status.SUCCESS) {
+                    var parent = window.parent;
+                    if (parent.table.options.type == table_type.bootstrapTable) {
+                        $.modal.close();
+                        parent.$.modal.msgSuccess(result.msg);
+                        parent.$.table.refresh();
+                    } else if (parent.table.options.type == table_type.bootstrapTreeTable) {
+                        $.modal.close();
+                        parent.$.modal.msgSuccess(result.msg);
+                        parent.$.treeTable.refresh();
+                    } else {
+                        $.modal.msgReload("执行成功,正在刷新数据请稍候……", modal_status.SUCCESS);
                     }
                 } else if (result.code == web_status.WARNING) {
                     $.modal.alertWarning(result.msg)

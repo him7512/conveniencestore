@@ -98,13 +98,13 @@
                     <i class="fa fa-edit"></i> 修改
                 </a>
                 <a class="btn btn-danger multiple disabled" onclick=erasure() shiro:hasPermission="procure:purchase:remove">
-                    <i class="fa fa-remove"></i> 删除
+                    <i class="fa fa-remove"></i> 删除(作废)
                 </a>
                 <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="procure:purchase:export">
                     <i class="fa fa-download"></i> 导出
                 </a>
                 <a class="btn btn-primary" onclick=generate() shiro:hasPermission="procure:purchase:generate">
-                    <i class="fa fa-plus"></i> 一键生成采购单
+                    <i class="fa fa-plus"></i> 一键生成登记单
                 </a>
             </div>
             <div class="col-sm-12 select-table table-striped">
@@ -249,10 +249,10 @@
                     align: 'center',
                     formatter: function(value, row, index) {
                         var actions = [];
-                        // 条目状态(1:制单中;2:待审核;3:退回;4:作废;5:已入库;)
+                        // 条目状态(1:待制单;2:待审核;6:已移交;3:退回;4:作废;5:已入库;)
                         if (row.purStatus == 1 || row.purStatus == 3) {
-                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.purId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
-                            actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.purId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.purId + '\')"><i class="fa fa-edit" shiro="procure:purchase:edit"></i>编辑</a> ');
+                            actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.purId + '\')"><i class="fa fa-remove" shiro="procure:purchase:remove"></i>作废</a>');
                         }
                         return actions.join('');
                     }
@@ -302,15 +302,16 @@
             }
         }
 
-        // 删除前判断
+        // 多条目删除前判断
+        // 条目状态(1:待制单;2:待审核;6:已移交;3:退回;4:作废;5:已入库;)
         function erasure() {
             var purStatusList = $.table.selectColumns('purStatus').join().split(",");
             for (position in purStatusList) {
-                if (purStatusList[position] == 2) {
-                    $.modal.alertWarning("存在完成制单并移交审核的条目，无法对其进行删除。");
+                if (purStatusList[position] == 2 || purStatusList[position] == 6) {
+                    $.modal.alertWarning("存在完成制单待审核或移交仓库管理的条目，无法对其进行作废处理。");
                     return;
                 } else if (purStatusList[position] == 5) {
-                    $.modal.alertWarning("存在已经完成入库的条目，无法对其进行删除。");
+                    $.modal.alertWarning("存在已经完成入库的条目，无法对其进行作废处理。");
                     return;
                 }
             }

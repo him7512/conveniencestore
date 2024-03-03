@@ -65,14 +65,14 @@
             </div>
 
             <div class="btn-group-sm" id="toolbar" role="group">
-                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="procure:purchaseRegistration:add">
-                    <i class="fa fa-plus"></i> 添加
-                </a>
-                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="procure:purchaseRegistration:edit">
-                    <i class="fa fa-edit"></i> 修改
-                </a>
-                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="procure:purchaseRegistration:remove">
-                    <i class="fa fa-remove"></i> 删除
+<!--                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="procure:purchaseRegistration:add">-->
+<!--                    <i class="fa fa-plus"></i> 添加-->
+<!--                </a>-->
+<!--                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="procure:purchaseRegistration:edit">-->
+<!--                    <i class="fa fa-edit"></i> 修改-->
+<!--                </a>-->
+                <a class="btn btn-danger multiple disabled" onclick=erasure() shiro:hasPermission="procure:purchaseRegistration:remove">
+                    <i class="fa fa-remove"></i> 删除(作废)
                 </a>
                 <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="procure:purchaseRegistration:export">
                     <i class="fa fa-download"></i> 导出
@@ -86,7 +86,10 @@
     <th:block th:include="include :: footer" />
     <script th:inline="javascript">
         var editFlag = [[${@permission.hasPermi('procure:purchaseRegistration:edit')}]];
+        var warehousingFlag = [[${@permission.hasPermi('procure:purchaseRegistration:warehousing')}]];
         var removeFlag = [[${@permission.hasPermi('procure:purchaseRegistration:remove')}]];
+        var examineFlag = [[${@permission.hasPermi('procure:purchaseRegistration:examine')}]];
+        var warehousingExamineFlag = [[${@permission.hasPermi('procure:purchaseRegistration:warehousingExamine')}]];
         var purRegStatusDatas = [[${@dict.getType('pur_reg_status')}]];
         var prefix = ctx + "procure/purchaseRegistration";
 
@@ -97,6 +100,7 @@
                 updateUrl: prefix + "/edit/{id}",
                 removeUrl: prefix + "/remove",
                 exportUrl: prefix + "/export",
+                detailUrl: prefix + "/view/{id}",
                 modalName: "采购单管理",
                 columns: [{
                     checkbox: true
@@ -111,54 +115,94 @@
                     title: '物品采购登记单号'
                 },
                 {
+                    field: 'createDate',
+                    title: '创建时间',
+                },
+                {
                     field: 'deptId',
-                    title: '采购单部门id'
+                    title: '采购单部门id',
+                    visible: false
                 },
                 {
                     field: 'zoningCode',
-                    title: '采购单所属区划编码'
-                },
-                {
-                    field: 'createDate',
-                    title: '采购单生成时间'
-                },
-                {
-                    field: 'updateDate',
-                    title: '采购单更新时间'
-                },
-                {
-                    field: 'purRegStatus',
-                    title: '采购单状态(1:制单中;2:待审核;3:退回;4:作废;5:通过;)',
-                    formatter: function(value, row, index) {
-                       return $.table.selectDictLabel(purRegStatusDatas, value);
-                    }
+                    title: '采购单所属区划编码',
+                    visible: false
                 },
                 {
                     field: 'reviewbyId',
-                    title: '审核人id'
+                    title: '审核人id',
+                    visible: false
                 },
                 {
                     field: 'reviewComment',
                     title: '审核意见'
                 },
                 {
+                    field: 'updateDate',
+                    title: '更新时间'
+                },
+                {
                     field: 'reviewTime',
                     title: '审核日期',
-                    visible: false
+                },
+                {
+                    field: 'purRegStatus',
+                    title: '单据状态',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(purRegStatusDatas, value);
+                    }
                 },
                 {
                     title: '操作',
                     align: 'center',
                     formatter: function(value, row, index) {
                         var actions = [];
-                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.purRegId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
-                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.purRegId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        // 采购单状态(1:制单中;2:已移交;3:退回;4:作废;5:通过;)
+                        if (row.purRegStatus == 1) {
+                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.detailTab(\'' + row.purRegId + '\' + \'' + ',audit' + '\')" shiro="procure:purchaseRegistration:edit"><i class="fa fa-check"></i>审核</a> ');
+                        } else if (row.purRegStatus == 3) {
+                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.detailTab(\'' + row.purRegId + '\' + \'' + ',audit' + '\')" shiro="procure:purchaseRegistration:edit"><i class="fa fa-check"></i>重审</a> ');
+                        } else if (row.purRegStatus == 2) {
+                            actions.push('<a class="btn btn-success btn-xs ' + warehousingFlag + '" href="javascript:void(0)" onclick="$.operate.detailTab(\'' + row.purRegId + '\' + \'' + ',warehousing' + '\')" shiro="procure:purchaseRegistration:warehousing"><i class="fa fa-check"></i>入库</a> ');
+                        }
+                        actions.push('<a class="btn btn-warning btn-xs ' + examineFlag + '" href="javascript:void(0)" onclick="$.operate.detailTab(\'' + row.purRegId + '\' + \'' + ',examine' + '\')" shiro="procure:purchaseRegistration:examine"><i class="fa fa-eye"></i>查看</a> ');
+                        actions.push('<a class="btn btn-warning btn-xs ' + warehousingExamineFlag + '" href="javascript:void(0)" onclick="$.operate.detailTab(\'' + row.purRegId + '\' + \'' + ',warehousingExamine' + '\')" shiro="procure:purchaseRegistration:warehousingExamine"><i class="fa fa-eye"></i>查看</a> ');
+                        if (row.purRegStatus == 1 || row.purRegStatus == 3 || row.purRegStatus == 4) {
+                            actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.purRegId + '\')"><i class="fa fa-remove" shiro="procure:purchaseRegistration:remove"></i>作废</a>');
+
+                        }
                         return actions.join('');
                     }
                 }]
             };
             $.table.init(options);
         });
+
+        // 入库查看按钮
+        function warehousingExamine(id) {
+            $.modal.openTab("采购单详情", prefix + "/view3c/" + id);
+        }
+
+        // 多条目删除前判断
+        // 采购单状态(1:制单中;2:已移交;3:退回;4:作废;5:通过;)
+        function erasure() {
+            var purRegStatusList = $.table.selectColumns('purRegStatus').join().split(",");
+            for (position in purRegStatusList) {
+                if (purRegStatusList[position] == 2) {
+                    $.modal.alertWarning("存在移交仓库管理的采购登记单，无法对其进行作废处理。");
+                    return;
+                } else if (purRegStatusList[position] == 5) {
+                    $.modal.alertWarning("存在仓管方已完成入库审核的登记单，无法对其进行作废处理。");
+                    return;
+                }
+            }
+            $.operate.removeAll();
+            return;
+        }
+
+
+
+
     </script>
 </body>
 </html>

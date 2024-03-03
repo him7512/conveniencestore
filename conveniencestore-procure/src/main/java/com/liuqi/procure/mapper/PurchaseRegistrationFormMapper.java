@@ -4,13 +4,12 @@ import java.util.List;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.liuqi.procure.domain.PurchaseRegistrationForm;
-import org.apache.poi.ss.formula.functions.T;
 
 /**
  * 采购单管理Mapper接口
  *
  * @author ruoyi
- * @date 2024-02-23
+ * @date 2024-03-03
  */
 public interface PurchaseRegistrationFormMapper extends BaseMapper<PurchaseRegistrationForm>
 {

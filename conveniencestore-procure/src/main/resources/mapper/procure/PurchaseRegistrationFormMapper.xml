@@ -15,10 +15,13 @@
         <result property="reviewbyId"    column="reviewby_id"    />
         <result property="reviewComment"    column="review_comment"    />
         <result property="reviewTime"    column="review_time"    />
+        <result property="warehousingReviewbyId"    column="warehousing_reviewby_id"    />
+        <result property="warehousingReviewComment"    column="warehousing_review_comment"    />
+        <result property="warehousingReviewTime"    column="warehousing_review_time"    />
     </resultMap>
 
     <sql id="selectPurchaseRegistrationFormVo">
-        select pur_reg_id, pur_reg_code, dept_id, zoning_code, create_date, update_date, pur_reg_status, reviewby_id, review_comment, review_time from purchase_registration_form
+        select pur_reg_id, pur_reg_code, dept_id, zoning_code, create_date, update_date, pur_reg_status, reviewby_id, review_comment, review_time, warehousing_reviewby_id, warehousing_review_comment, warehousing_review_time from purchase_registration_form
     </sql>
 
     <select id="selectPurchaseRegistrationFormList" parameterType="PurchaseRegistrationForm" resultMap="PurchaseRegistrationFormResult">
@@ -27,12 +30,15 @@
             <if test="purRegCode != null  and purRegCode != ''"> and pur_reg_code = #{purRegCode}</if>
             <if test="deptId != null "> and dept_id = #{deptId}</if>
             <if test="zoningCode != null  and zoningCode != ''"> and zoning_code = #{zoningCode}</if>
-            <if test="params.beginCreateDate != null and params.beginCreateDate != '' and params.endCreateDate != null and params.endCreateDate != ''"> and create_date between TO_DATE(#{params.beginCreateDate}, 'YYYY-MM-DD') and TO_DATE(#{params.endCreateDate}, 'YYYY-MM-DD')</if>
-            <if test="params.beginUpdateDate != null and params.beginUpdateDate != '' and params.endUpdateDate != null and params.endUpdateDate != ''"> and update_date between TO_DATE(#{params.beginUpdateDate}, 'YYYY-MM-DD') and TO_DATE(#{params.endUpdateDate}, 'YYYY-MM-DD')</if>
+            <if test="params.beginCreateDate != null and params.beginCreateDate != '' and params.endCreateDate != null and params.endCreateDate != ''"> and create_date between #{params.beginCreateDate} and #{params.endCreateDate}</if>
+            <if test="params.beginUpdateDate != null and params.beginUpdateDate != '' and params.endUpdateDate != null and params.endUpdateDate != ''"> and update_date between #{params.beginUpdateDate} and #{params.endUpdateDate}</if>
             <if test="purRegStatus != null  and purRegStatus != ''"> and pur_reg_status = #{purRegStatus}</if>
             <if test="reviewbyId != null  and reviewbyId != ''"> and reviewby_id = #{reviewbyId}</if>
             <if test="reviewComment != null  and reviewComment != ''"> and review_comment = #{reviewComment}</if>
-            <if test="params.beginReviewTime != null and params.beginReviewTime != '' and params.endReviewTime != null and params.endReviewTime != ''"> and review_time between TO_DATE(#{params.beginReviewTime}, 'YYYY-MM-DD') and TO_DATE(#{params.endReviewTime}, 'YYYY-MM-DD')</if>
+            <if test="params.beginReviewTime != null and params.beginReviewTime != '' and params.endReviewTime != null and params.endReviewTime != ''"> and review_time between #{params.beginReviewTime} and #{params.endReviewTime}</if>
+            <if test="warehousingReviewbyId != null  and warehousingReviewbyId != ''"> and warehousing_reviewby_id = #{warehousingReviewbyId}</if>
+            <if test="warehousingReviewComment != null  and warehousingReviewComment != ''"> and warehousing_review_comment = #{warehousingReviewComment}</if>
+            <if test="warehousingReviewTime != null "> and warehousing_review_time = #{warehousingReviewTime}</if>
         </where>
     </select>
 
@@ -57,6 +63,9 @@
             <if test="reviewbyId != null">reviewby_id,</if>
             <if test="reviewComment != null">review_comment,</if>
             <if test="reviewTime != null">review_time,</if>
+            <if test="warehousingReviewbyId != null">warehousing_reviewby_id,</if>
+            <if test="warehousingReviewComment != null">warehousing_review_comment,</if>
+            <if test="warehousingReviewTime != null">warehousing_review_time,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="purRegId != null">#{purRegId},</if>
@@ -69,6 +78,9 @@
             <if test="reviewbyId != null">#{reviewbyId},</if>
             <if test="reviewComment != null">#{reviewComment},</if>
             <if test="reviewTime != null">#{reviewTime},</if>
+            <if test="warehousingReviewbyId != null">#{warehousingReviewbyId},</if>
+            <if test="warehousingReviewComment != null">#{warehousingReviewComment},</if>
+            <if test="warehousingReviewTime != null">#{warehousingReviewTime},</if>
         </trim>
     </insert>
 
@@ -84,6 +96,9 @@
             <if test="reviewbyId != null">reviewby_id = #{reviewbyId},</if>
             <if test="reviewComment != null">review_comment = #{reviewComment},</if>
             <if test="reviewTime != null">review_time = #{reviewTime},</if>
+            <if test="warehousingReviewbyId != null">warehousing_reviewby_id = #{warehousingReviewbyId},</if>
+            <if test="warehousingReviewComment != null">warehousing_review_comment = #{warehousingReviewComment},</if>
+            <if test="warehousingReviewTime != null">warehousing_review_time = #{warehousingReviewTime},</if>
         </trim>
         where pur_reg_id = #{purRegId}
     </update>

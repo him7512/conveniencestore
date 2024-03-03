@@ -3,6 +3,7 @@ package com.liuqi.procure.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -36,6 +37,8 @@ import javax.annotation.Resource;
 @Service
 public class PurchaseRegistrationFormServiceImpl extends ServiceImpl<PurchaseRegistrationFormMapper, PurchaseRegistrationForm> implements IPurchaseRegistrationFormService
 {
+    @Resource
+    private PurchaseFormMapper purchaseFormMapper;
     @Resource
     private PurchaseRegistrationFormMapper purchaseRegistrationFormMapper;
     @Resource
@@ -98,7 +101,7 @@ public class PurchaseRegistrationFormServiceImpl extends ServiceImpl<PurchaseReg
         // 成功结果返回1
         int restltPurchaseRegistrationForm = purchaseRegistrationFormMapper.insertPurchaseRegistrationForm(purchaseRegistrationForm);
         if (!new Integer(1).equals(restltPurchaseRegistrationForm)) {
-            return AjaxResult.error("创建采购单失败，请联系统管理员！");
+            return AjaxResult.error("创建采购单失败，请联系系统管理员！");
         }
 
         // 对物品采购条目状态进行更新
@@ -106,6 +109,7 @@ public class PurchaseRegistrationFormServiceImpl extends ServiceImpl<PurchaseReg
         lambdaUpdateWrapper.in(PurchaseForm::getPurId, purIdList);
         lambdaUpdateWrapper.set(PurchaseForm::getUpdateDate, DateUtils.getDateNowDate("yyyy-MM-dd"));
         lambdaUpdateWrapper.set(PurchaseForm::getPurRegCode, purchaseRegistrationForm.getPurRegCode());
+        lambdaUpdateWrapper.set(PurchaseForm::getPurStatus, procureCommonStatus.pur_status_audit);
         boolean resultBooleanPurchaseForm = purchaseFormService.update(lambdaUpdateWrapper);
         // 判断更新结果
         if (resultBooleanPurchaseForm) {
@@ -120,12 +124,51 @@ public class PurchaseRegistrationFormServiceImpl extends ServiceImpl<PurchaseReg
      * 修改采购单管理
      *
      * @param purchaseRegistrationForm 采购单管理
+     * @param typeOf 修改类型（审核移送：examine; 审核入库：warehousing）
      * @return 结果
      */
     @Override
-    public int updatePurchaseRegistrationForm(PurchaseRegistrationForm purchaseRegistrationForm)
+    @Transactional
+    public AjaxResult updatePurchaseRegistrationForm(PurchaseRegistrationForm purchaseRegistrationForm, String typeOf)
     {
-        return purchaseRegistrationFormMapper.updatePurchaseRegistrationForm(purchaseRegistrationForm);
+        /*
+            purchaseRegistrationForm 登记单
+            purchaseForm 物品采购条目
+        */
+        PurchaseForm purchaseForm = new PurchaseForm();
+        LambdaUpdateWrapper<PurchaseForm> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        purchaseRegistrationForm.setUpdateDate(DateUtils.getDateNowDate("yyyy-MM-dd"));
+        if ("examine".equals(typeOf)) {
+            purchaseRegistrationForm.setReviewTime(DateUtils.getDateNowDate("yyyy-MM-dd"));
+        }
+        if ("warehousing".equals(typeOf)) {
+            purchaseRegistrationForm.setWarehousingReviewTime(DateUtils.getDateNowDate("yyyy-MM-dd"));
+        }
+        int restltPurchaseRegistrationForm = purchaseRegistrationFormMapper.updatePurchaseRegistrationForm(purchaseRegistrationForm);
+        if (!new Integer(1).equals(restltPurchaseRegistrationForm)) {
+            return AjaxResult.error("采购模块审核采购单失败，请联系系统管理员！");
+        }
+
+        // 更新采购物品条目状态
+        purchaseForm.setPurRegCode(purchaseRegistrationForm.getPurRegCode());
+        lambdaUpdateWrapper.eq(PurchaseForm::getPurRegCode, purchaseRegistrationForm.getPurRegCode());
+        // 审核退回
+        if (procureCommonStatus.pur_reg_status_return.equals(purchaseRegistrationForm.getPurRegStatus())) {
+            lambdaUpdateWrapper.set(PurchaseForm::getPurStatus, procureCommonStatus.pur_status_return);
+        // 成功移交
+        } else if (procureCommonStatus.pur_reg_status_audit.equals(purchaseRegistrationForm.getPurRegStatus())) {
+            lambdaUpdateWrapper.set(PurchaseForm::getPurStatus, procureCommonStatus.pur_status_transfer);
+        // 成功入库
+        } else if (procureCommonStatus.pur_reg_status_pass.equals(purchaseRegistrationForm.getPurRegStatus())) {
+            lambdaUpdateWrapper.set(PurchaseForm::getPurStatus, procureCommonStatus.pur_reg_status_pass);
+        }
+        boolean resultBooleanPurchaseForm = purchaseFormService.update(lambdaUpdateWrapper);
+        // 判断更新结果
+        if (resultBooleanPurchaseForm) {
+            return AjaxResult.success("审核成功！");
+        }else {
+            return AjaxResult.error("采购单审核更新物品条目信息失败，请联系系统管理员！");
+        }
     }
 
     /**
@@ -135,9 +178,38 @@ public class PurchaseRegistrationFormServiceImpl extends ServiceImpl<PurchaseReg
      * @return 结果
      */
     @Override
-    public int deletePurchaseRegistrationFormByPurRegIds(String purRegIds)
+    @Transactional
+    public AjaxResult deletePurchaseRegistrationFormByPurRegIds(String purRegIds)
     {
-        return purchaseRegistrationFormMapper.deletePurchaseRegistrationFormByPurRegIds(Convert.toStrArray(purRegIds));
+        String result = "";
+        // 缺少方法：在删除登记单的同时应将采购物品条目中的purRegCode清空，并且将purStatus变为1(待制单)。
+        String[] purRegIdList =  Convert.toStrArray(purRegIds);
+        for (String purRegId : purRegIdList) {
+            // 拿到 purchaseRegistrationForm 完整对象，目的取出purRegCode
+            PurchaseRegistrationForm purchaseRegistrationForm = this.selectPurchaseRegistrationFormByPurRegId(Long.valueOf(purRegId));
+            // 依据拿到的对象对物品采购条目进行更新
+            LambdaUpdateWrapper<PurchaseForm> purchaseFormLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            purchaseFormLambdaUpdateWrapper.eq(PurchaseForm::getPurRegCode, purchaseRegistrationForm.getPurRegCode());
+            purchaseFormLambdaUpdateWrapper.set(PurchaseForm::getPurStatus, procureCommonStatus.pur_status_init);
+            purchaseFormLambdaUpdateWrapper.set(PurchaseForm::getPurRegCode, "");
+            boolean resultBooleanPurchaseForm = purchaseFormService.update(purchaseFormLambdaUpdateWrapper);
+            // 判断更新结果
+            if (resultBooleanPurchaseForm) {
+                result += "更新属于登记单号「" +  purchaseRegistrationForm.getPurRegCode()  + "」的物品条目成功！";
+            }else {
+                result += "更新属于登记单号「" +  purchaseRegistrationForm.getPurRegCode()  + "」的物品条目失败！";
+            }
+        }
+        // 判断更新结果
+        if (result.contains("失败")) {
+            return AjaxResult.error(result);
+        }
+        // 删除登记单
+        int restltPurchaseRegistrationForm =  purchaseRegistrationFormMapper.deletePurchaseRegistrationFormByPurRegIds(Convert.toStrArray(purRegIds));
+        if (new Integer(0).equals(restltPurchaseRegistrationForm)) {
+            return AjaxResult.error("采购模块审核采购单失败，请联系系统管理员！");
+        }
+        return AjaxResult.success("登记单作废成功，同时" + result);
     }
 
     /**

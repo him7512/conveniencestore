@@ -1,6 +1,9 @@
 package com.liuqi.procure.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -104,13 +107,14 @@ public class PurchaseRegistrationFormController extends BaseController
     /**
      * 修改保存采购单管理
      */
-    @RequiresPermissions("procure:purchaseRegistration:edit")
+    @RequiresPermissions(value = {"procure:purchaseRegistration:edit", "procure:purchaseRegistration:warehousing"}, logical = Logical.OR)
     @Log(title = "采购单管理", businessType = BusinessType.UPDATE)
-    @PostMapping("/edit")
+    @PostMapping(value={"/edit/{typeOf}", "/edit"})
     @ResponseBody
-    public AjaxResult editSave(PurchaseRegistrationForm purchaseRegistrationForm)
+    public AjaxResult editSave(@PathVariable(value = "typeOf", required = false) String typeOf,PurchaseRegistrationForm purchaseRegistrationForm)
     {
-        return toAjax(purchaseRegistrationFormService.updatePurchaseRegistrationForm(purchaseRegistrationForm));
+        System.out.println(typeOf);
+        return purchaseRegistrationFormService.updatePurchaseRegistrationForm(purchaseRegistrationForm, typeOf);
     }
 
     /**
@@ -122,6 +126,36 @@ public class PurchaseRegistrationFormController extends BaseController
     @ResponseBody
     public AjaxResult remove(String ids)
     {
-        return toAjax(purchaseRegistrationFormService.deletePurchaseRegistrationFormByPurRegIds(ids));
+        return purchaseRegistrationFormService.deletePurchaseRegistrationFormByPurRegIds(ids);
     }
+
+    /**
+     * 查看登记审核主单（采购管理）
+     */
+    @RequiresPermissions(value = {"procure:purchaseRegistration:examine", "procure:purchaseRegistration:edit", "procure:purchaseRegistration:warehousing", "procure:purchaseRegistration:warehousingExamine"}, logical = Logical.OR)
+    @GetMapping("/view/{purRegIdType}")
+    public String view2c(@PathVariable("purRegIdType") String purRegIdType, ModelMap mmap)
+    {
+        String[] purRegIdTypeList = purRegIdType.split(",");
+        Long purRegId = Long.valueOf(purRegIdTypeList[0]);
+        String type = purRegIdTypeList[1];
+        PurchaseRegistrationForm purchaseRegistrationForm = purchaseRegistrationFormService.selectPurchaseRegistrationFormByPurRegId(purRegId);
+        mmap.put("purchaseRegistrationForm", purchaseRegistrationForm);
+        // 移交审核页面
+        if ("audit".equals(type)) {
+            return prefix + "/auditFlow";
+        // 入库审核界面
+        }else if ("warehousing".equals(type)) {
+            return prefix + "/auditFlow2";
+        // 移交查看界面
+        } else if ("examine".equals(type)){
+            return prefix + "/view";
+        // 入库查看界面
+        /*} else if("warehousingExamine".equals(type)) {*/
+        } else {
+            return prefix + "/view2";
+        }
+    }
+
+
 }

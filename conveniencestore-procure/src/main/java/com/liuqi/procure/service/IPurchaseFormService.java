@@ -31,6 +31,14 @@ public interface IPurchaseFormService extends IService<PurchaseForm>
     public List<PurchaseForm> selectPurchaseFormList(PurchaseForm purchaseForm);
 
     /**
+     * 查找采购单下的详细信息
+     * @param purRegCode    该采购单的单号
+     * @param purchaseForm
+     * @return
+     */
+    public List<PurchaseForm> selectBelongPurchaseFormList(String purRegCode, PurchaseForm purchaseForm);
+
+    /**
      * 新增采购明细登记
      *
      * @param purchaseForm 采购明细登记

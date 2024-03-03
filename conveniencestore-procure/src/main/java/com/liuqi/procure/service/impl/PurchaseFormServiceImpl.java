@@ -58,6 +58,17 @@ public class PurchaseFormServiceImpl extends ServiceImpl<PurchaseFormMapper, Pur
     }
 
     /**
+     * 查找采购单下的详细信息
+     * @param purRegCode    该采购单的单号
+     * @param purchaseForm
+     * @return
+     */
+    public List<PurchaseForm> selectBelongPurchaseFormList(String purRegCode, PurchaseForm purchaseForm) {
+        purchaseForm.setPurRegCode(purRegCode);
+        return purchaseFormMapper.selectPurchaseFormList(purchaseForm);
+    }
+
+    /**
      * 新增采购明细登记
      *
      * @param purchaseForm 采购明细登记

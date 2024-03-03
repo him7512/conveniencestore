@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+  <th:block th:include="include :: header('审核移送采购主单')" />
+  <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <div class="pull-right">
+        <button type="button" class="btn btn-sm btn-primary" onclick="submitHandler()"><i class="fa fa-check"></i>审 核 </button>
+        <button type="button" class="btn btn-sm btn-danger" onclick="closeItem()"><i class="fa fa-reply-all"></i>关 闭 </button>
+    </div>
+
+  <form class="form-horizontal m" id="form-purchaseRegistration-edit" th:object="${purchaseRegistrationForm}">
+    <input name="purRegId" th:field="*{purRegId}" type="hidden">
+    <div class="row form-group">
+      <label class="col-sm-2 control-label">物品采购登记单号：</label>
+      <div class="col-sm-4">
+          <input id="purRegCode" name="purRegCode" th:value="*{purRegCode}" class="form-control" readonly>
+      </div>
+    </div>
+<!--    <div class="row form-group">-->
+<!--        <label class="col-sm-2 control-label">采购单部门id：</label>-->
+<!--        <div class="col-sm-4">-->
+<!--            <div id="deptId" name="deptId" th:text="*{deptId}" class="form-control-static div-underline" type="hidden"></div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="row form-group">-->
+<!--        <label class="col-sm-2 control-label">采购单所属区划编码：</label>-->
+<!--        <div class="col-sm-4">-->
+<!--            <div id="zoningCode" name="zoningCode" th:text="*{zoningCode}" class="form-control-static div-underline"></div>-->
+<!--        </div>-->
+<!--    </div>-->
+    <div class="row form-group">
+        <label class="col-sm-2 control-label">采购单创建时间：</label>
+        <div class="col-sm-4">
+            <div id="createDate" name="createDate" th:text="${#dates.format(purchaseRegistrationForm.createDate, 'yyyy-MM-dd')}" class="form-control-static div-underline"></div>
+        </div>
+    </div>
+<!--    <div class="row form-group">-->
+<!--        <label class="col-sm-2 control-label">采购单更新时间：</label>-->
+<!--        <div class="col-sm-4">-->
+<!--            <div id="updateDate" name="updateDate" th:value="${#dates.format(purchaseRegistrationForm.updateDate, 'yyyy-MM-dd')}" class="form-control-static div-underline"></div>-->
+<!--        </div>-->
+<!--    </div>-->
+    <div class="row form-group">
+        <label class="col-sm-2 control-label is-required">审核结果：</label>
+        <div class="col-sm-4">
+            <div class="radio-box">
+                <input type="radio" id="status2" name="purRegStatus" value="2" checked>
+                <label id="statusLabel2" for="status2">移交审核</label>
+            </div>
+            <div class="radio-box">
+                <input type="radio" id="status3" name="purRegStatus" value="3" >
+                <label id="statusLabel3" for="status3">审核退回</label>
+            </div>
+        </div>
+    </div>
+<!--    <div class="row form-group">-->
+<!--        <label class="col-sm-2 control-label">审核人id：</label>-->
+<!--        <div class="col-sm-4">-->
+<!--            <div id="reviewbyId" name="reviewbyId" th:text="*{reviewbyId}" class="form-control" type="text"></div>-->
+<!--        </div>-->
+<!--    </div>-->
+    <div class="row form-group">
+          <label class="col-sm-2 control-label is-required">审核意见：</label>
+          <div class="col-sm-4">
+              <textarea id="reviewComment" name="reviewComment" th:text="*{reviewComment}" class="form-control" type="text" required></textarea>
+          </div>
+    </div>
+<!--    <div class="row form-group">-->
+<!--        <label class="col-sm-2 control-label">审核日期：</label>-->
+<!--        <div class="col-sm-4">-->
+<!--            <div class="input-group date">-->
+<!--                <div id="reviewTime" name="reviewTime" th:value="${#dates.format(purchaseRegistrationForm.reviewTime, 'yyyy-MM-dd')}" class="form-control" placeholder="yyyy-MM-dd"></div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+  </form>
+    <!-- 商品条目表单-->
+    <h4 class="form-header h4">商品条目明细信息</h4>
+    <div class="col-sm-12 select-table table-striped">
+        <table id="bootstrap-table"></table>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<th:block th:include="include :: datetimepicker-js" />
+<script th:inline="javascript">
+  var purRegCode = [[${purchaseRegistrationForm.purRegCode}]]
+  var prefix = ctx + "procure/purchaseRegistration";
+  $("#form-purchaseRegistration-edit").validate({
+      onkeyup: false,
+      rules:{
+          purRegCode:{maxlength:40},
+      },
+    focusCleanup: true
+  });
+
+  function submitHandler() {
+      let status = $("input[name='purRegStatus']:checked").val();
+      let statusText = $("#statusLabel" + status).text();
+      if ($.validate.form()) {
+          layer.confirm("是否【"+statusText+"】该登记审核单？", {
+              title: '系统提示',
+              icon: 3,
+              btn: ['确定', '返回'], //可以无限个按钮
+              yes: function(index, layero){
+                  // console.log($('#form-purchaseRegistration-edit').serialize())
+                  $.operate.save(prefix + "/edit/examine", $('#form-purchaseRegistration-edit').serialize());
+              },cancel: function(index, layero){
+                  layer.close(index);
+              }
+          });
+      }
+  }
+
+  var editFlag = [[${@permission.hasPermi('procure:purchase:edit')}]];
+  var removeFlag = [[${@permission.hasPermi('procure:purchase:remove')}]];
+  var purStatusDatas = [[${@dict.getType('pur_status')}]];
+  var prefix_detail = ctx + "procure/purchase";
+  $(function() {
+      var options = {
+          url: prefix_detail + "/belongList/" + purRegCode,
+          createUrl: prefix_detail + "/add",
+          updateUrl: prefix_detail + "/edit/{id}",
+          removeUrl: prefix_detail + "/remove",
+          exportUrl: prefix_detail + "/export",
+          modalName: "采购明细登记",
+          columns: [{
+              checkbox: true
+          },
+              {
+                  field: 'purId',
+                  title: '物品采购条目id(主键)',
+                  visible: false
+              },
+              {
+                  field: 'purCode',
+                  title: '物品采购条目单号',
+              },
+              {
+                  field: 'purRegCode',
+                  title: '物品采购登记单号',
+                  visible: false
+              },
+              {
+                  field: 'deptId',
+                  title: '录入物品部门id',
+                  visible: false
+              },
+              {
+                  field: 'zoningCode',
+                  title: '录入物品部门所属区划编码',
+                  visible: false
+              },
+              {
+                  field: 'goodsName',
+                  title: '物品名称'
+              },
+              {
+                  field: 'firstQuantity',
+                  title: '物品第一数量',
+                  visible: false
+              },
+              {
+                  field: 'firstMeasurement',
+                  title: '物品第一计量单位',
+                  visible: false
+              },
+              {
+                  field: 'firstQuantity',
+                  title: '第一数量',
+                  formatter: function (value, row, index) {
+                      value = value + ' / ' + row.firstMeasurement;
+                      return value;
+                  }
+              },
+              {
+                  field: 'secondQuantity',
+                  title: '物品第二数量',
+                  visible: false
+              },
+              {
+                  field: 'secondMeasurement',
+                  title: '物品第二计量单位',
+                  visible: false
+              },
+              {
+                  field: 'secondQuantity',
+                  title: '第二数量',
+                  formatter: function (value, row, index) {
+                      if (row.secondQuantity == null || row.secondMeasurement == null) {
+                          value = '「空」';
+                      }else {
+                          value = value + ' / ' + row.secondMeasurement;
+                      }
+                      return value;
+                  }
+              },
+              {
+                  field: 'goodsComment',
+                  title: '物品说明'
+              },
+              {
+                  field: 'purUnitTotalPrice',
+                  title: '单位物品采购价',
+                  visible: false
+              },
+              {
+                  field: 'purUnit',
+                  title: '物品采购单位',
+                  visible: false
+              },
+              {
+                  field: "purUnitTotalPrice",
+                  title: '采购单价',
+                  formatter: function (value, row, index) {
+                      if (row.purUnit == null || row.purUnitTotalPrice == null) {
+                          value = "「空」"
+                      } else {
+                          value = value + ' / ' + row.purUnit;
+                      }
+                      return value;
+                  }
+              },
+              {
+                  field: 'purTotalPrice',
+                  title: '物品采购总价'
+              },
+              {
+                  field: 'createDate',
+                  title: '创建时间',
+              },
+              {
+                  field: 'updateDate',
+                  title: '更新时间',
+              },
+              {
+                  field: 'purStatus',
+                  title: '条目状态',
+                  formatter: function(value, row, index) {
+                      return $.table.selectDictLabel(purStatusDatas, value);
+                  }
+              },
+              {
+                  title: '操作',
+                  align: 'center',
+                  formatter: function(value, row, index) {
+                      var actions = [];
+                      // 条目状态(1:待制单;2:待审核;6:已移交;3:退回;4:作废;5:已入库;)
+                      if (row.purStatus == 1 || row.purStatus == 3) {
+                          actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.purId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                          actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.purId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                      }
+                      return actions.join('');
+                  }
+              }]
+      };
+      $.table.init(options);
+  });
+
+</script>
+</body>
+</html>

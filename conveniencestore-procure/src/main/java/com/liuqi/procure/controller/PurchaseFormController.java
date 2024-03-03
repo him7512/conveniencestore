@@ -1,5 +1,6 @@
 package com.liuqi.procure.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.liuqi.procure.domain.PurchaseRegistrationForm;
@@ -23,6 +24,8 @@ import com.liuqi.common.utils.poi.ExcelUtil;
 import com.liuqi.common.core.page.TableDataInfo;
 
 import javax.annotation.Resource;
+
+import static com.liuqi.common.config.datasource.DynamicDataSourceContextHolder.log;
 
 /**
  * 采购明细登记Controller
@@ -58,6 +61,16 @@ public class PurchaseFormController extends BaseController
     {
         startPage();
         List<PurchaseForm> list = purchaseFormService.selectPurchaseFormList(purchaseForm);
+        return getDataTable(list);
+    }
+
+    // 查询主单下详细信息
+    @PostMapping("/belongList/{purRegCode}")
+    @ResponseBody
+    public TableDataInfo getDjdetailList(@PathVariable("purRegCode") String purRegCode, PurchaseForm purchaseForm)
+    {
+        startPage();
+        List<PurchaseForm> list = purchaseFormService.selectBelongPurchaseFormList(purRegCode, purchaseForm);
         return getDataTable(list);
     }
 
@@ -135,6 +148,7 @@ public class PurchaseFormController extends BaseController
     /**
      * 一键生成采购单
      */
+    @RequiresPermissions("procure:purchase:generate")
     @PostMapping("/generate")
     @ResponseBody
     public AjaxResult generate(String[] purIdList, String[] purStatusList) {

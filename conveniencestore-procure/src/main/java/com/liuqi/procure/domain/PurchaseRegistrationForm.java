@@ -11,7 +11,7 @@ import com.liuqi.common.core.domain.BaseEntity;
  * 采购单管理对象 purchase_registration_form
  *
  * @author ruoyi
- * @date 2024-02-23
+ * @date 2024-03-03
  */
 public class PurchaseRegistrationForm extends BaseEntity
 {
@@ -42,22 +42,35 @@ public class PurchaseRegistrationForm extends BaseEntity
     @Excel(name = "采购单更新时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date updateDate;
 
-    /** 采购单状态(1:制单中;2:待审核;3:退回;4:作废;5:通过;) */
-    @Excel(name = "采购单状态(1:制单中;2:待审核;3:退回;4:作废;5:通过;)")
+    /** 采购单状态(1:制单中;2:已移交;3:退回;4:作废;5:通过;) */
+    @Excel(name = "采购单状态(1:制单中;2:已移交;3:退回;4:作废;5:通过;)")
     private String purRegStatus;
 
-    /** 审核人id */
-    @Excel(name = "审核人id")
+    /** 移送审核人id */
+    @Excel(name = "移送审核人id")
     private String reviewbyId;
 
-    /** 审核意见 */
-    @Excel(name = "审核意见")
+    /** 移送审核意见 */
+    @Excel(name = "移送审核意见")
     private String reviewComment;
 
-    /** 审核日期 */
+    /** 移送审核日期 */
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "审核日期", width = 30, dateFormat = "yyyy-MM-dd")
+    @Excel(name = "移送审核日期", width = 30, dateFormat = "yyyy-MM-dd")
     private Date reviewTime;
+
+    /** 入库审核人id */
+    @Excel(name = "入库审核人id")
+    private String warehousingReviewbyId;
+
+    /** 入库审核意见 */
+    @Excel(name = "入库审核意见")
+    private String warehousingReviewComment;
+
+    /** 入库审核日期 */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Excel(name = "入库审核日期", width = 30, dateFormat = "yyyy-MM-dd")
+    private Date warehousingReviewTime;
 
     public void setPurRegId(Long purRegId)
     {
@@ -149,6 +162,33 @@ public class PurchaseRegistrationForm extends BaseEntity
     {
         return reviewTime;
     }
+    public void setWarehousingReviewbyId(String warehousingReviewbyId)
+    {
+        this.warehousingReviewbyId = warehousingReviewbyId;
+    }
+
+    public String getWarehousingReviewbyId()
+    {
+        return warehousingReviewbyId;
+    }
+    public void setWarehousingReviewComment(String warehousingReviewComment)
+    {
+        this.warehousingReviewComment = warehousingReviewComment;
+    }
+
+    public String getWarehousingReviewComment()
+    {
+        return warehousingReviewComment;
+    }
+    public void setWarehousingReviewTime(Date warehousingReviewTime)
+    {
+        this.warehousingReviewTime = warehousingReviewTime;
+    }
+
+    public Date getWarehousingReviewTime()
+    {
+        return warehousingReviewTime;
+    }
 
     @Override
     public String toString() {
@@ -163,6 +203,9 @@ public class PurchaseRegistrationForm extends BaseEntity
                 .append("reviewbyId", getReviewbyId())
                 .append("reviewComment", getReviewComment())
                 .append("reviewTime", getReviewTime())
+                .append("warehousingReviewbyId", getWarehousingReviewbyId())
+                .append("warehousingReviewComment", getWarehousingReviewComment())
+                .append("warehousingReviewTime", getWarehousingReviewTime())
                 .toString();
     }
 }

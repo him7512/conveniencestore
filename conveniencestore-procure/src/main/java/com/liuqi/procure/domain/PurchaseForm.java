@@ -66,8 +66,8 @@ public class PurchaseForm extends BaseEntity
     @Excel(name = "该条目更新时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date updateDate;
 
-    /** 条目状态(1:制单中;2:待审核;3:退回;4:作废;5:已入库;) */
-    @Excel(name = "条目状态(1:制单中;2:待审核;3:退回;4:作废;5:已入库;)")
+    /** 条目状态(1:待制单;2:待审核;6:已移交;3:退回;4:作废;5:已入库;) */
+    @Excel(name = "条目状态(1:待制单;2:待审核;3:退回;4:作废;5:已入库;)")
     private String purStatus;
 
     /** 物品说明 */

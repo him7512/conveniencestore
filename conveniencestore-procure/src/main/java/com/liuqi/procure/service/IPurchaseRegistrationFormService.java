@@ -46,9 +46,10 @@ public interface IPurchaseRegistrationFormService extends IService<PurchaseRegis
      * 修改采购单管理
      *
      * @param purchaseRegistrationForm 采购单管理
+     * @param typeOf 修改类型（审核移送：examine; 审核入库：warehousing）
      * @return 结果
      */
-    public int updatePurchaseRegistrationForm(PurchaseRegistrationForm purchaseRegistrationForm);
+    public AjaxResult updatePurchaseRegistrationForm(PurchaseRegistrationForm purchaseRegistrationForm, String typeOf);
 
     /**
      * 批量删除采购单管理
@@ -56,7 +57,7 @@ public interface IPurchaseRegistrationFormService extends IService<PurchaseRegis
      * @param purRegIds 需要删除的采购单管理主键集合
      * @return 结果
      */
-    public int deletePurchaseRegistrationFormByPurRegIds(String purRegIds);
+    public AjaxResult deletePurchaseRegistrationFormByPurRegIds(String purRegIds);
 
     /**
      * 删除采购单管理信息

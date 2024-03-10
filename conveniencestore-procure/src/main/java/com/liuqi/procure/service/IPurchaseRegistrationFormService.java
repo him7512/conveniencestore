@@ -47,9 +47,10 @@ public interface IPurchaseRegistrationFormService extends IService<PurchaseRegis
      *
      * @param purchaseRegistrationForm 采购单管理
      * @param typeOf 修改类型（审核移送：examine; 审核入库：warehousing）
+     * @param dataList 如果是入库操作 会传入该入库单下的商品数据(JSON)
      * @return 结果
      */
-    public AjaxResult updatePurchaseRegistrationForm(PurchaseRegistrationForm purchaseRegistrationForm, String typeOf);
+    public AjaxResult updatePurchaseRegistrationForm(PurchaseRegistrationForm purchaseRegistrationForm, String typeOf, String dataList);
 
     /**
      * 批量删除采购单管理

@@ -125,7 +125,7 @@
                   field: 'firstQuantity',
                   title: '第一数量',
                   formatter: function (value, row, index) {
-                      value = value + ' / ' + row.firstMeasurement;
+                      value = value + '' + row.firstMeasurement;
                       return value;
                   }
               },
@@ -146,7 +146,7 @@
                       if (row.secondQuantity == null || row.secondMeasurement == null) {
                           value = '「空」';
                       }else {
-                          value = value + ' / ' + row.secondMeasurement;
+                          value = value + '' + row.secondMeasurement;
                       }
                       return value;
                   }
@@ -172,7 +172,7 @@
                       if (row.purUnit == null || row.purUnitTotalPrice == null) {
                           value = "「空」"
                       } else {
-                          value = value + ' / ' + row.purUnit;
+                          value = value + '/' + row.purUnit;
                       }
                       return value;
                   }

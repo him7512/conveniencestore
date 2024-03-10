@@ -22,8 +22,8 @@ com.liuqi
 ├── conveniencestore-quartz      // 定时任务（不用可移除）
 ├── conveniencestore-system      // 系统代码
 ├── conveniencestore-admin       // 后台服务
-├── conveniencestore-procure     // 采购模块
-├── conveniencestore-      // 其他模块
+├── conveniencestore-procure     // 物品采购模块
+├── conveniencestore-management  // 商品管理模块
 ├── conveniencestore-      // 其他模块
 ├── conveniencestore-      // 其他模块
 ├── conveniencestore-      // 其他模块

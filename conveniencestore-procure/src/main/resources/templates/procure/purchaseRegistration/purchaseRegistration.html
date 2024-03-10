@@ -144,6 +144,19 @@
                 {
                     field: 'reviewTime',
                     title: '审核日期',
+                    visible: false
+                },
+                {
+                    field: '',
+                    title: '',
+                },
+                {
+                    field: '',
+                    title: '',
+                },
+                {
+                    field: '',
+                    title: '',
                 },
                 {
                     field: 'purRegStatus',
@@ -166,7 +179,7 @@
                             actions.push('<a class="btn btn-success btn-xs ' + warehousingFlag + '" href="javascript:void(0)" onclick="$.operate.detailTab(\'' + row.purRegId + '\' + \'' + ',warehousing' + '\')" shiro="procure:purchaseRegistration:warehousing"><i class="fa fa-check"></i>入库</a> ');
                         }
                         actions.push('<a class="btn btn-warning btn-xs ' + examineFlag + '" href="javascript:void(0)" onclick="$.operate.detailTab(\'' + row.purRegId + '\' + \'' + ',examine' + '\')" shiro="procure:purchaseRegistration:examine"><i class="fa fa-eye"></i>查看</a> ');
-                        actions.push('<a class="btn btn-warning btn-xs ' + warehousingExamineFlag + '" href="javascript:void(0)" onclick="$.operate.detailTab(\'' + row.purRegId + '\' + \'' + ',warehousingExamine' + '\')" shiro="procure:purchaseRegistration:warehousingExamine"><i class="fa fa-eye"></i>查看</a> ');
+                        /*actions.push('<a class="btn btn-warning btn-xs ' + warehousingExamineFlag + '" href="javascript:void(0)" onclick="$.operate.detailTab(\'' + row.purRegId + '\' + \'' + ',warehousingExamine' + '\')" shiro="procure:purchaseRegistration:warehousingExamine"><i class="fa fa-eye"></i>查看</a> ');*/
                         if (row.purRegStatus == 1 || row.purRegStatus == 3 || row.purRegStatus == 4) {
                             actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.purRegId + '\')"><i class="fa fa-remove" shiro="procure:purchaseRegistration:remove"></i>作废</a>');
 

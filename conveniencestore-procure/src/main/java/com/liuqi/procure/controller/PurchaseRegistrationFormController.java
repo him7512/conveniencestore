@@ -106,15 +106,15 @@ public class PurchaseRegistrationFormController extends BaseController
 
     /**
      * 修改保存采购单管理
+     * @param dataList 如果是入库操作 会传入该入库单下的商品数据(JSON)
      */
     @RequiresPermissions(value = {"procure:purchaseRegistration:edit", "procure:purchaseRegistration:warehousing"}, logical = Logical.OR)
     @Log(title = "采购单管理", businessType = BusinessType.UPDATE)
     @PostMapping(value={"/edit/{typeOf}", "/edit"})
     @ResponseBody
-    public AjaxResult editSave(@PathVariable(value = "typeOf", required = false) String typeOf,PurchaseRegistrationForm purchaseRegistrationForm)
+    public AjaxResult editSave(@PathVariable(value = "typeOf", required = false) String typeOf,PurchaseRegistrationForm purchaseRegistrationForm, String dataList)
     {
-        System.out.println(typeOf);
-        return purchaseRegistrationFormService.updatePurchaseRegistrationForm(purchaseRegistrationForm, typeOf);
+        return purchaseRegistrationFormService.updatePurchaseRegistrationForm(purchaseRegistrationForm, typeOf, dataList);
     }
 
     /**
@@ -148,12 +148,13 @@ public class PurchaseRegistrationFormController extends BaseController
         }else if ("warehousing".equals(type)) {
             return prefix + "/auditFlow2";
         // 移交查看界面
-        } else if ("examine".equals(type)){
+        /*} else if ("examine".equals(type)){*/
+        } else {
             return prefix + "/view";
         // 入库查看界面
         /*} else if("warehousingExamine".equals(type)) {*/
-        } else {
-            return prefix + "/view2";
+        /*} else {
+            return prefix + "/view2";*/
         }
     }
 

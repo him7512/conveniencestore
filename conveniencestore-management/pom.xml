@@ -9,7 +9,7 @@
         <version>4.7.8</version>
     </parent>
 
-    <artifactId>conveniencestore-procure</artifactId>
+    <artifactId>conveniencestore-management</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -18,7 +18,7 @@
     </properties>
 
     <description>
-        procure采购模块
+        management商品管理模块
     </description>
 
     <dependencies>
@@ -48,13 +48,10 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- 管理模块-->
-        <dependency>
-            <groupId>com.liuqi</groupId>
-            <artifactId>conveniencestore-management</artifactId>
-        </dependency>
 
     </dependencies>
+
+
 
 
 </project>

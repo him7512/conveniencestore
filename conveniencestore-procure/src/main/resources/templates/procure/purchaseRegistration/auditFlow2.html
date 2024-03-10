@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh" xmlns:th="http://www.thymeleaf.org" >
 <head>
-  <th:block th:include="include :: header('审核移送采购主单')" />
+  <th:block th:include="include :: header('审核入库采购主单')" />
   <th:block th:include="include :: datetimepicker-css" />
 </head>
 <body class="white-bg">
@@ -12,11 +12,11 @@
     </div>
 
   <form class="form-horizontal m" id="form-purchaseRegistration-edit" th:object="${purchaseRegistrationForm}">
-    <input name="purRegId" th:field="*{purRegId}" type="hidden">
+    <input id="purRegId" name="purRegId" th:field="*{purRegId}" type="hidden">
     <div class="row form-group">
       <label class="col-sm-2 control-label">物品采购登记单号：</label>
       <div class="col-sm-4">
-          <input id="purRegCode" name="purRegCode" th:value="*{purRegCode}" class="form-control" readonly>
+          <input id="purRegCode" name="purRegCode" th:value="*{purRegCode}" class="form-control" readonly="readonly">
       </div>
     </div>
 <!--    <div class="row form-group">-->
@@ -62,7 +62,7 @@
         <div class="col-sm-4">
             <div class="radio-box">
                 <input type="radio" id="status5" name="purRegStatus" value="5" checked>
-                <label id="statusLabel2" for="status5">完成入库</label>
+                <label id="statusLabel5" for="status5">完成入库</label>
             </div>
             <div class="radio-box">
                 <input type="radio" id="status3" name="purRegStatus" value="3" >
@@ -94,6 +94,7 @@
 <th:block th:include="include :: footer" />
 <th:block th:include="include :: datetimepicker-js" />
 <script th:inline="javascript">
+
   var purRegCode = [[${purchaseRegistrationForm.purRegCode}]]
   var prefix = ctx + "procure/purchaseRegistration";
   $("#form-purchaseRegistration-edit").validate({
@@ -113,8 +114,18 @@
               icon: 3,
               btn: ['确定', '返回'], //可以无限个按钮
               yes: function(index, layero){
-                  // console.log($('#form-purchaseRegistration-edit').serialize())
-                  $.operate.save(prefix + "/edit/warehousing", $('#form-purchaseRegistration-edit').serialize());
+                  // 拿到主单数据
+                  var data = $('#form-purchaseRegistration-edit').serializeArray();
+                  // 拿到表格数据
+                  purDataList = $('#bootstrap-table').bootstrapTable('getData');
+                  var dataListParam = {
+                      name : "dataList",
+                      value : JSON.stringify(purDataList)
+                  };
+                  // 拼接
+                  data.push(dataListParam);
+                  // console.log(data);
+                  $.operate.save(prefix + "/edit/warehousing", data);
               },cancel: function(index, layero){
                   layer.close(index);
               }
@@ -175,12 +186,51 @@
                   title: '物品第一计量单位',
                   visible: false
               },
-              {
+              /*{
                   field: 'firstQuantity',
                   title: '第一数量',
                   formatter: function (value, row, index) {
-                      value = value + ' / ' + row.firstMeasurement;
+                      value = value + '' + row.firstMeasurement;
                       return value;
+                  },
+                  visible: false
+              },*/
+              {
+                  field: 'firstQuantity',
+                  title: '入库第一数量',
+                  halign: "center",
+                  width: 10,
+                  widthUnit: "%",
+                  formatter: function(value, row, index) {
+                      var html = $.common.sprintf("" +
+                          "<div class='input-group'>" +
+                          "<input width='30%' class='form-control' type='text' placeholder='点击后编辑' title='点击后可进行编辑' autocomplete='off' readonly value='%s' " +
+                          " name='firstQuantityText" + index + " ' id='firstQuantityText" + index + "'" +
+                          " value=" + value + " data=" + value + " " +
+                          " onblur='changeQuantity(" + index + ", " + row.purID + ", " + 11 + ")' " +
+                          " onclick='javascript:if(this==document.activeElement){this.readOnly=false;if(this.value==\"\"){this.value=0;}this.select()}' >"+
+                          "</div>",value
+                      );
+                      return html;
+                  }
+              },
+              {
+                  field: "firstMeasurement",
+                  title: "入库第一单位",
+                  halign: "center",
+                  width: 10,
+                  widthUnit: "%",
+                  formatter: function(value, row, index) {
+                      var html = $.common.sprintf("" +
+                          "<div class='input-group'>" +
+                          "<input width='30%' class='form-control' type='text' placeholder='点击后编辑' title='点击后可进行编辑' autocomplete='off' readonly value='%s' " +
+                          " name='firstMeasurementText" + index + " ' id='firstMeasurementText" + index + "'" +
+                          " value=" + value + " data=" + value + " " +
+                          " onblur='changeQuantity(" + index + ", " + row.purID + ", " + 12 + ")' " +
+                          " onclick='javascript:if(this==document.activeElement){this.readOnly=false;if(this.value==\"\"){this.value=0;}this.select()}' >"+
+                          "</div>",value
+                      );
+                      return html;
                   }
               },
               {
@@ -193,21 +243,75 @@
                   title: '物品第二计量单位',
                   visible: false
               },
-              {
+              /*{
                   field: 'secondQuantity',
                   title: '第二数量',
                   formatter: function (value, row, index) {
                       if (row.secondQuantity == null || row.secondMeasurement == null) {
                           value = '「空」';
                       }else {
-                          value = value + ' / ' + row.secondMeasurement;
+                          value = value + '' + row.secondMeasurement;
                       }
                       return value;
+                  },
+                  visible: false
+              },*/
+              {
+                  field: 'secondQuantity',
+                  title: '入库第二数量',
+                  halign: "center",
+                  width: 10,
+                  widthUnit: "%",
+                  formatter: function(value, row, index) {
+                      var html = $.common.sprintf("" +
+                          "<div class='input-group'>" +
+                          "<input width='30%' class='form-control' type='text' placeholder='点击后编辑' title='点击后可进行编辑' autocomplete='off' readonly value='%s' " +
+                          " name='secondQuantityText" + index + " ' id='secondQuantityText" + index + "'" +
+                          " value=" + value + " data=" + value + " " +
+                          " onblur='changeQuantity(" + index + ", " + row.purID + ", " + 21 +")' " +
+                          " onclick='javascript:if(this==document.activeElement){this.readOnly=false;if(this.value==\"\"){this.value=0;}this.select()}' >"+
+                          "</div>",value
+                      );
+                      return html;
+                  }
+              },
+              {
+                  field: "secondMeasurement",
+                  title: "入库第二单位",
+                  halign: "center",
+                  width: 10,
+                  widthUnit: "%",
+                  formatter: function(value, row, index) {
+                      var html = $.common.sprintf("" +
+                          "<div class='input-group'>" +
+                          "<input width='30%' class='form-control' type='text' placeholder='点击后编辑' title='点击后可进行编辑' autocomplete='off' readonly value='%s' " +
+                          " name='secondMeasurementText" + index + " ' id='secondMeasurementText" + index + "'" +
+                          " value=" + value + " data=" + value + " " +
+                          " onblur='changeQuantity(" + index + ", " + row.purID + ", " + 22 + ")' " +
+                          " onclick='javascript:if(this==document.activeElement){this.readOnly=false;if(this.value==\"\"){this.value=0;}this.select()}' >"+
+                          "</div>",value
+                      );
+                      return html;
                   }
               },
               {
                   field: 'goodsComment',
-                  title: '物品说明'
+                  title: '物品说明',
+                  width: 20,
+                  widthUnit: "%",
+                  formatter: function(value, row, index) {
+                      var style = "text-align:center;vertical-align:middle;"
+                      var html = $.common.sprintf("" +
+                          "<div class='input-group'" + style + ">" +
+                          "<input class='form-control' type='text' placeholder='点击后编辑' title='点击后可进行编辑' autocomplete='off' readonly value='%s' " +
+                          " name='goodsCommentText" + index + " ' id='goodsCommentText" + index + "'" +
+                          " value=" + value + " data=" + value + " " +
+                          " onblur='changeQuantity(" + index + ", " + row.purID + ", " + 3 + ")' " +
+                          " onclick='javascript:if(this==document.activeElement){this.readOnly=false;if(this.value==\"\"){this.value=0;}this.select()}' >"+
+                          "</div>",value
+                      );
+                      return html;
+                  }
               },
               {
                   field: 'purUnitTotalPrice',
@@ -226,29 +330,33 @@
                       if (row.purUnit == null || row.purUnitTotalPrice == null) {
                           value = "「空」"
                       } else {
-                          value = value + ' / ' + row.purUnit;
+                          value = value + '/' + row.purUnit;
                       }
                       return value;
                   }
               },
               {
                   field: 'purTotalPrice',
-                  title: '物品采购总价'
+                  title: '物品采购总价',
+                  visible: false
               },
               {
                   field: 'createDate',
                   title: '创建时间',
+                  visible: false
               },
               {
                   field: 'updateDate',
                   title: '更新时间',
+                  visible: false
               },
               {
                   field: 'purStatus',
                   title: '条目状态',
                   formatter: function(value, row, index) {
                       return $.table.selectDictLabel(purStatusDatas, value);
-                  }
+                  },
+                  visible: false
               },
               {
                   title: '操作',
@@ -261,11 +369,52 @@
                           actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.purId + '\')"><i class="fa fa-remove"></i>删除</a>');
                       }
                       return actions.join('');
-                  }
+                  },
+                  visible: false
               }]
       };
       $.table.init(options);
   });
+
+  // 更新bootstrap-table数据
+  function changeQuantity(index, purId, type) {
+      if (type == 11) {      // 第一数量更新
+          var writevalue11 = $('#firstQuantityText' + index).val(); //获取改变后的输入框的值
+          $('#bootstrap-table').bootstrapTable('updateRow', {
+              index: index,
+              row: {firstQuantity: writevalue11}
+          });
+      } else if (type == 12) {  // 第二单位更新
+          var writevalue12 = $('#firstMeasurementText' + index).val(); //获取改变后的输入框的值
+          $('#bootstrap-table').bootstrapTable('updateRow', {
+              index: index,
+              row: {firstMeasurement: writevalue12}
+          });
+      } else if (type == 21) {    // 第二数量更新
+          var writevalue21 = $('#secondQuantityText' + index).val();
+          $('#bootstrap-table').bootstrapTable('updateRow', {
+              index: index,
+              row: {secondQuantity: writevalue21}
+          });
+      } else if (type == 22) {
+          var writevalue22 = $('#secondMeasurementText' + index).val();
+          $('#bootstrap-table').bootstrapTable('updateRow', {
+              index: index,
+              row: {secondMeasurement: writevalue22}
+          });
+      } else if (type == 3) {
+          var writevalue3 = $('#goodsCommentText' + index).val();
+          $('#bootstrap-table').bootstrapTable('updateRow', {
+              index: index,
+              row: {goodsComment: writevalue3}
+          });
+      }
+  }
+
+
+
+
+
 
 </script>
 </body>

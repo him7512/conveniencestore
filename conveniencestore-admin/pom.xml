@@ -74,6 +74,12 @@
             <artifactId>conveniencestore-procure</artifactId>
         </dependency>
 
+        <!-- 商品管理模块-->
+        <dependency>
+            <groupId>com.liuqi</groupId>
+            <artifactId>conveniencestore-management</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

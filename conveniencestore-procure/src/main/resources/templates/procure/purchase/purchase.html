@@ -128,6 +128,16 @@
                 removeUrl: prefix + "/remove",
                 exportUrl: prefix + "/export",
                 modalName: "采购明细登记",
+                rowStyle: true,
+                rowStyle: function(row) {   // 动态修改行的颜色
+                    var abnormallabel = $.trim(row.purStatus);
+                    if(abnormallabel == "5"){               // 如果值是5，表示入库成功
+                        return  {css:{"background-color":'rgb(200,250,170)'}};
+                    } else if (abnormallabel == "7") {      // 如果是7，表示入库成功但是有误差
+                        return  {css:{"background-color":'rgb(250,190,150)'}};
+                    }
+                    return '';          // 注意：即使不改变颜色，也得返回 '' ，否则会报错。
+                },
                 columns: [{
                     checkbox: true
                 },
@@ -172,8 +182,9 @@
                 {
                     field: 'firstQuantity',
                     title: '第一数量',
+                    align: "center",
                     formatter: function (value, row, index) {
-                        value = value + ' / ' + row.firstMeasurement;
+                        value = value + '' + row.firstMeasurement;
                         return value;
                     }
                 },
@@ -190,11 +201,12 @@
                 {
                     field: 'secondQuantity',
                     title: '第二数量',
+                    align: "center",
                     formatter: function (value, row, index) {
                         if (row.secondQuantity == null || row.secondMeasurement == null) {
                             value = '「空」';
                         }else {
-                            value = value + ' / ' + row.secondMeasurement;
+                            value = value + '' + row.secondMeasurement;
                         }
                         return value;
                     }
@@ -220,7 +232,7 @@
                         if (row.purUnit == null || row.purUnitTotalPrice == null) {
                             value = "「空」"
                         } else {
-                            value = value + ' / ' + row.purUnit;
+                            value = value + '/' + row.purUnit;
                         }
                         return value;
                     }

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改售卖明细查询')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-detail-edit" th:object="${salesDetails}">
+        <input name="salesId" th:field="*{salesId}" type="hidden">          <!-- 主单id -->
+        <input name="goodsCode" th:field="*{goodsCode}" type="hidden">      <!-- 物品编码 -->
+        <input name="goodsName" th:field="*{goodsName}" type="hidden">      <!-- 物品名称 -->
+        <input name="goodsAlias" th:field="*{goodsAlias}" type="hidden">    <!-- 物品别称 -->
+        <input name="salesCode" th:field="*{salesCode}" type="hidden">      <!-- 主单编码 -->
+        <input name="purchaserId" th:field="*{purchaserId}" type="hidden">  <!-- 购买人id -->
+        <div class="form-group">
+            <label class="col-sm-3 control-label">物品换货理由：</label>
+            <div class="col-sm-8">
+                <textarea name="reasonRandc" th:field="*{reasonRandc}" class="form-control" type="text"></textarea>
+            </div>
+        </div>
+        <input name="salesCodeBundle" th:field="*{salesCodeBundle}" type="hidden">      <!-- 捆绑销售主物品单号 -->
+        <input name="salesQuantity" th:field="*{salesQuantity}" type="hidden">          <!-- 物品售出/退换货数量>单价 -->
+    </form>
+</div>
+<th:block th:include="include :: footer" />
+<th:block th:include="include :: datetimepicker-js" />
+<script th:inline="javascript">
+    var prefix = ctx + "sales/detail";
+    var prefixManagement = ctx + "management/ledgerGoodsManagement";
+    $("#form-detail-edit").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            var dataBase = $('#form-detail-edit').serializeArray();
+            var data = {
+                salesId : dataBase[0].value,
+                goodsCode : dataBase[1].value,
+                goodsName : dataBase[2].value,
+                goodsAlias : dataBase[3].value,
+                salesCode : dataBase[4].value,
+                purchaserId : dataBase[5].value,
+                reasonRandc : dataBase[6].value,
+                salesCodeBundle : dataBase[7].value,
+                type : "exchange",
+                salesQuantity : dataBase[8].value
+            }
+            $.operate.save(prefix + "/returnOrExchangeMakeSure", data);
+        }
+    }
+
+    $("input[name='salesDate']").datetimepicker({
+        format: "yyyy-mm-dd",
+        minView: "month",
+        autoclose: true
+    });
+
+    $("input[name='updateDate']").datetimepicker({
+        format: "yyyy-mm-dd",
+        minView: "month",
+        autoclose: true
+    });
+
+</script>
+</body>
+</html>

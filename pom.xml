@@ -200,6 +200,13 @@
                 <version>${liuqi.version}</version>
             </dependency>
 
+            <!-- 商品销售模块-->
+            <dependency>
+                <groupId>com.liuqi</groupId>
+                <artifactId>conveniencestore-sales</artifactId>
+                <version>${liuqi.version}</version>
+            </dependency>
+
             <!-- Mybatis-plus-->
             <dependency>
                 <groupId>com.baomidou</groupId>
@@ -227,6 +234,7 @@
         <module>conveniencestore-common</module>
         <module>conveniencestore-procure</module>
         <module>conveniencestore-management</module>
+        <module>conveniencestore-sales</module>
     </modules>
     <packaging>pom</packaging>
 

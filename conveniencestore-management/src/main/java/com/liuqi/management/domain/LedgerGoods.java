@@ -94,8 +94,8 @@ public class LedgerGoods extends BaseEntity
     @Excel(name = "商品活动捆绑销售商品单价(第一单位)", readConverterExp = "逗=号隔开")
     private String bundleSellPricing;
 
-    /** 商品目前产生利润 */
-    @Excel(name = "商品目前产生利润")
+    /** 商品目前收益 */
+    @Excel(name = "商品目前收益")
     private String profitUptonow;
 
     /** 商品质保日期截至 */

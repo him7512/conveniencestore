@@ -106,6 +106,8 @@
                 <a class="btn btn-primary" onclick=generate() shiro:hasPermission="procure:purchase:generate">
                     <i class="fa fa-plus"></i> 一键生成登记单
                 </a>
+                <span style="background-color: rgb(200,250,170)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>表示入库成功的物品&nbsp;&nbsp;&nbsp;&nbsp;
+                <span style="background-color: rgb(250,190,150)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>表示入库成功但被修改过的物品&nbsp;&nbsp;&nbsp;&nbsp;
             </div>
             <div class="col-sm-12 select-table table-striped">
                 <table id="bootstrap-table"></table>
@@ -261,8 +263,8 @@
                     align: 'center',
                     formatter: function(value, row, index) {
                         var actions = [];
-                        // 条目状态(1:待制单;2:待审核;6:已移交;3:退回;4:作废;5:已入库;)
-                        if (row.purStatus == 1 || row.purStatus == 3) {
+                        // 条目状态(1:待制单;2:待审核;6:已移交;3:退回;4:作废;5:已入库;7:已入库但有变动;)
+                        if (row.purStatus == 1 || row.purStatus == 3 || row.purStatus == 7) {
                             actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.purId + '\')"><i class="fa fa-edit" shiro="procure:purchase:edit"></i>编辑</a> ');
                             actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.purId + '\')"><i class="fa fa-remove" shiro="procure:purchase:remove"></i>作废</a>');
                         }

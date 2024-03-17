@@ -175,9 +175,10 @@
                             actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.detailTab(\'' + row.purRegId + '\' + \'' + ',audit' + '\')" shiro="procure:purchaseRegistration:edit"><i class="fa fa-check"></i>审核</a> ');
                         } else if (row.purRegStatus == 3) {
                             actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.detailTab(\'' + row.purRegId + '\' + \'' + ',audit' + '\')" shiro="procure:purchaseRegistration:edit"><i class="fa fa-check"></i>重审</a> ');
-                        } else if (row.purRegStatus == 2) {
-                            actions.push('<a class="btn btn-success btn-xs ' + warehousingFlag + '" href="javascript:void(0)" onclick="$.operate.detailTab(\'' + row.purRegId + '\' + \'' + ',warehousing' + '\')" shiro="procure:purchaseRegistration:warehousing"><i class="fa fa-check"></i>入库</a> ');
                         }
+                        /*else if (row.purRegStatus == 2) {
+                            actions.push('<a class="btn btn-success btn-xs ' + warehousingFlag + '" href="javascript:void(0)" onclick="$.operate.detailTab(\'' + row.purRegId + '\' + \'' + ',warehousing' + '\')" shiro="procure:purchaseRegistration:warehousing"><i class="fa fa-check"></i>入库</a> ');
+                        }*/
                         actions.push('<a class="btn btn-warning btn-xs ' + examineFlag + '" href="javascript:void(0)" onclick="$.operate.detailTab(\'' + row.purRegId + '\' + \'' + ',examine' + '\')" shiro="procure:purchaseRegistration:examine"><i class="fa fa-eye"></i>查看</a> ');
                         /*actions.push('<a class="btn btn-warning btn-xs ' + warehousingExamineFlag + '" href="javascript:void(0)" onclick="$.operate.detailTab(\'' + row.purRegId + '\' + \'' + ',warehousingExamine' + '\')" shiro="procure:purchaseRegistration:warehousingExamine"><i class="fa fa-eye"></i>查看</a> ');*/
                         if (row.purRegStatus == 1 || row.purRegStatus == 3 || row.purRegStatus == 4) {

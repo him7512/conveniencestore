@@ -80,6 +80,12 @@
             <artifactId>conveniencestore-management</artifactId>
         </dependency>
 
+        <!-- 商品销售模块-->
+        <dependency>
+            <groupId>com.liuqi</groupId>
+            <artifactId>conveniencestore-sales</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

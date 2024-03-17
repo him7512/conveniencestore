@@ -24,7 +24,7 @@ com.liuqi
 ├── conveniencestore-admin       // 后台服务
 ├── conveniencestore-procure     // 物品采购模块
 ├── conveniencestore-management  // 商品管理模块
-├── conveniencestore-      // 其他模块
+├── conveniencestore-sales       // 售卖模块
 ├── conveniencestore-      // 其他模块
 ├── conveniencestore-      // 其他模块
 ├── conveniencestore-      // 其他模块

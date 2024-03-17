@@ -50,8 +50,8 @@
             <if test="goodsStatus != null  and goodsStatus != ''"> and goods_status = #{goodsStatus}</if>
             <if test="deptId != null "> and dept_id = #{deptId}</if>
             <if test="zoningCode != null  and zoningCode != ''"> and zoning_code = #{zoningCode}</if>
-            <if test="params.beginCreateDate != null and params.beginCreateDate != '' and params.endCreateDate != null and params.endCreateDate != ''"> and create_date between #{params.beginCreateDate} and #{params.endCreateDate}</if>
-            <if test="params.beginUpdateDate != null and params.beginUpdateDate != '' and params.endUpdateDate != null and params.endUpdateDate != ''"> and update_date between #{params.beginUpdateDate} and #{params.endUpdateDate}</if>
+            <if test="params.beginCreateDate != null and params.beginCreateDate != '' and params.endCreateDate != null and params.endCreateDate != ''"> and create_date between TO_DATE(#{params.beginCreateDate}, 'YYYY-MM-DD') and TO_DATE(#{params.endCreateDate}, 'YYYY-MM-DD')</if>
+            <if test="params.beginUpdateDate != null and params.beginUpdateDate != '' and params.endUpdateDate != null and params.endUpdateDate != ''"> and update_date between TO_DATE(#{params.beginUpdateDate}, 'YYYY-MM-DD') and TO_DATE(#{params.endUpdateDate}, 'YYYY-MM-DD')</if>
             <if test="firstQuantity != null "> and first_quantity = #{firstQuantity}</if>
             <if test="firstMeasurement != null  and firstMeasurement != ''"> and first_measurement = #{firstMeasurement}</if>
             <if test="secondQuantity != null "> and second_quantity = #{secondQuantity}</if>
@@ -64,7 +64,7 @@
             <if test="bundleSellCode != null  and bundleSellCode != ''"> and bundle_sell_code = #{bundleSellCode}</if>
             <if test="bundleSellPricing != null  and bundleSellPricing != ''"> and bundle_sell_pricing = #{bundleSellPricing}</if>
             <if test="profitUptonow != null  and profitUptonow != ''"> and profit_uptonow = #{profitUptonow}</if>
-            <if test="params.beginSellByDate != null and params.beginSellByDate != '' and params.endSellByDate != null and params.endSellByDate != ''"> and sell_by_date between #{params.beginSellByDate} and #{params.endSellByDate}</if>
+            <if test="params.beginSellByDate != null and params.beginSellByDate != '' and params.endSellByDate != null and params.endSellByDate != ''"> and sell_by_date between TO_DATE(#{params.beginSellByDate}, 'YYYY-MM-DD') and TO_DATE(#{params.endSellByDate}, 'YYYY-MM-DD')</if>
             <if test="freezeStatus != null  and freezeStatus != ''"> and freeze_status = #{freezeStatus}</if>
             <if test="discardStatus != null  and discardStatus != ''"> and discard_status = #{discardStatus}</if>
             <if test="transferStatus != null  and transferStatus != ''"> and transfer_status = #{transferStatus}</if>

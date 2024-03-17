@@ -98,7 +98,7 @@
 <!--                            <input type="text" name="bundleSellPricing"/>-->
 <!--                        </li>-->
 <!--                        <li>-->
-<!--                            <label>商品目前产生利润：</label>-->
+<!--                            <label>商品目前收益：</label>-->
 <!--                            <input type="text" name="profitUptonow"/>-->
 <!--                        </li>-->
                         <li class="select-time">
@@ -216,7 +216,8 @@
                 },
                 {
                     field: 'goodsAlias',
-                    title: '商品别名'
+                    title: '商品别名',
+                    visible: false
                 },
                 {
                     field: 'goodsCode',
@@ -315,7 +316,7 @@
                 },
                 {
                     field: 'pricingFirst',
-                    title: '商品单价(第一数量)',
+                    title: '第一数量单价',
                     formatter: function (value, row, index) {
                         if (value == null || value == "") {
                             return "「待填写」";
@@ -350,8 +351,7 @@
                 },
                 {
                     field: 'profitUptonow',
-                    title: '商品目前产生利润',
-                    visible: false
+                    title: '商品收益',
                 },
                 {
                     field: 'sellByDate',

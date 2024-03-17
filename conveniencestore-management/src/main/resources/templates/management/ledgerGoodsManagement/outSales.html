@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('外售商品台账信息')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-ledgerGoodsManagement-add" th:object="${ledgerGoods}">
+        <input name="ledgerId" th:field="*{ledgerId}" type="hidden">
+        <div class="row form-group">
+            <label class="col-sm-2 control-label">商品单号：</label>
+            <div class="col-sm-4">
+                <input name="goodsCode" class="form-control" th:field="*{goodsCode}" readonly="readonly">
+            </div>
+        </div>
+        <div class="row form-group">
+            <label class="col-sm-2 control-label">捆绑商品编码：</label>
+            <div class="col-sm-4">
+                <div name="goodsCode" class="form-control-static div-underline" th:text="*{bundleSellCode}"></div>
+            </div>
+        </div>
+        <div class="row form-group">
+            <label class="col-sm-2 control-label">商品名称：</label>
+            <div class="col-sm-4">
+                <div name="goodsName" class="form-control-static div-underline" th:text="*{goodsName}"></div>
+            </div>
+            <label class="col-sm-2 control-label">商品别名：</label>
+            <div class="col-sm-4">
+                <div name="goodsAlias" class="form-control-static div-underline" th:text="*{goodsAlias}"></div>
+            </div>
+        </div>
+        <div class="row form-group">
+            <label class="col-sm-2 control-label">商品第一数量：</label>
+            <div class="col-sm-4">
+                <div name="firstQuantityNow" class="form-control-static div-underline" th:text="*{firstQuantityNow} + '' + *{firstMeasurement}"></div>
+            </div>
+        </div>
+        <div class="row form-group">
+            <label class="col-sm-2 control-label">商品第二数量：</label>
+            <div class="col-sm-4">
+                <div name="secondQuantityNow" class="form-control-static div-underline" th:text="*{secondQuantityNow} + '' + *{secondMeasurement}"></div>
+            </div>
+        </div>
+        <div class="row form-group">
+            <label class="col-sm-2 control-label is-required">外售数量：</label>
+            <div class="col-sm-4">
+                <input name="inSalesQuantity" class="form-control" type="text" required>
+            </div>
+        </div>
+        <div class="row form-group">
+            <label class="col-sm-2 control-label is-required">外售人id：</label>
+            <div class="col-sm-4">
+                <input name="consumerId" class="form-control" type="text" required>
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer" />
+<th:block th:include="include :: datetimepicker-js" />
+<script th:inline="javascript">
+    var prefix = ctx + "management/ledgerGoodsManagement"
+    $("#form-ledgerGoodsManagement-add").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            var dataBase = $('#form-ledgerGoodsManagement-add').serializeArray();
+            var data = {
+                ledgerId : dataBase[0].value,
+                goodsCode : dataBase[1].value,
+                salesQuantity : dataBase[2].value,
+                type : "outSales",
+                consumerId : dataBase[3].value
+            }
+            $.operate.save(prefix + "/salesMakeSure", data);
+        }
+    }
+
+    $("input[name='createDate']").datetimepicker({
+        format: "yyyy-mm-dd",
+        minView: "month",
+        autoclose: true
+    });
+
+    $("input[name='updateDate']").datetimepicker({
+        format: "yyyy-mm-dd",
+        minView: "month",
+        autoclose: true
+    });
+
+    $("input[name='sellByDate']").datetimepicker({
+        format: "yyyy-mm-dd",
+        minView: "month",
+        autoclose: true
+    });
+</script>
+</body>
+</html>

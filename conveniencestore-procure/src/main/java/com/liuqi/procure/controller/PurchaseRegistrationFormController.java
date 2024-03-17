@@ -44,6 +44,13 @@ public class PurchaseRegistrationFormController extends BaseController
         return prefix + "/purchaseRegistration";
     }
 
+    @RequiresPermissions("procure:purchaseRegistration:warehouseView")
+    @GetMapping("/warehouse")
+    public String purchaseRegistrationWarehouse()
+    {
+        return prefix + "/purchaseRegistrationWarehouse";
+    }
+
     /**
      * 查询采购单管理列表
      */

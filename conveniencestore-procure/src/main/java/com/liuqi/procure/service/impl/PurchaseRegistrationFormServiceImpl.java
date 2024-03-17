@@ -193,6 +193,8 @@ public class PurchaseRegistrationFormServiceImpl extends ServiceImpl<PurchaseReg
                 }
                 // 常规-商品说明写入
                 ledgerGoodsTem.setGoodsComment(purchaseFormTem.getGoodsComment());  // 商品说明
+                // 商品收益
+                ledgerGoodsTem.setProfitUptonow("0");
                 /*System.out.println(ledgerGoodsTem);*/
                 AjaxResult ledgerGoodsInsertResult =  iLedgerGoodsService.insertLedgerGoods(ledgerGoodsTem);
                 if (ledgerGoodsInsertResult.isError()) {
@@ -225,10 +227,14 @@ public class PurchaseRegistrationFormServiceImpl extends ServiceImpl<PurchaseReg
                     purchaseFormOld.getFirstMeasurement().equals(purchaseFormTem.getFirstMeasurement()) &&
                     purchaseFormOld.getSecondQuantity().equals(purchaseFormTem.getSecondQuantity()) &&
                     purchaseFormOld.getSecondMeasurement().equals(purchaseFormTem.getSecondMeasurement()) ){
-                    purchaseFormTem.setPurStatus(procureCommonStatus.pur_status_warehousing);  // 采购条目状态：入库但被更改
+                    purchaseFormTem.setPurStatus(procureCommonStatus.pur_status_warehousing);  // 采购条目状态：入库
                 }else {
-                    purchaseFormTem.setPurStatus("7");
+                    purchaseFormTem.setPurStatus("7");  // 采购条目状态：入库但被更改
                 }
+                /*
+                可能的疑问：这里咋不更新第二数量为0和第二单位为空？
+                因为后面有一个统一更新...又给覆盖掉了
+                 */
                 int resultUpdatePurchaseFormTem =  purchaseFormService.updatePurchaseForm(purchaseFormTem);
                 // 判断更新结果
                 if (new Integer(0).equals(resultUpdatePurchaseFormTem)) {

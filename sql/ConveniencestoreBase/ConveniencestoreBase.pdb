@@ -9923,7 +9923,7 @@ tablespace USERS</a:PhysicalOptions>
 <a:Creator>阿奇啊没错</a:Creator>
 <a:ModificationDate>1709603948</a:ModificationDate>
 <a:Modifier>阿奇啊没错</a:Modifier>
-<a:Comment>商品目前产生利润</a:Comment>
+<a:Comment>商品目前收益</a:Comment>
 <a:DataType>VARCHAR2(40)</a:DataType>
 <a:Length>40</a:Length>
 </o:Column>

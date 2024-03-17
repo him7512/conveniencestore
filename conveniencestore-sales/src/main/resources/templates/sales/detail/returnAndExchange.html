@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('售卖明细查询列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>物品名称：</label>
+                                <input type="text" name="goodsName"/>
+                            </li>
+                            <li>
+                                <label>物品别名：</label>
+                                <input type="text" name="goodsAlias"/>
+                            </li>
+                            <li>
+                                <label>物品单号：</label>
+                                <input type="text" name="goodsCode"/>
+                            </li>
+                            <li>
+                                <label>明细单号：</label>
+                                <input type="text" name="salesCode"/>
+                            </li>
+                            <li>
+                                <label>上级单号：</label>
+                                <input type="text" name="salesCodeUplevel"/>
+                            </li>
+                            <li>
+                                <label>捆绑单号：</label>
+                                <input type="text" name="salesCodeBundle"/>
+                            </li>
+                            <li>
+                                <label>购买人id：</label>
+                                <input type="text" name="purchaserId"/>
+                            </li>
+                            <li class="select-time">
+                                <label>售卖时间：</label>
+                                <input type="text" class="time-input" id="startTime1" placeholder="开始时间" name="params[beginSalesDate]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime1" placeholder="结束时间" name="params[endSalesDate]"/>
+                            </li>
+                            <li class="select-time">
+                                <label>更新时间：</label>
+                                <input type="text" class="time-input" id="startTime2" placeholder="开始时间" name="params[beginUpdateDate]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime2" placeholder="结束时间" name="params[endUpdateDate]"/>
+                            </li>
+                            <li>
+                                <label>售卖类型：</label>
+                                <select name="salesStatus" th:with="type=${@dict.getType('sales_detail_status')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+<!--                            <li>-->
+<!--                                <label>物品售卖数量(第一单位)：</label>-->
+<!--                                <input type="text" name="salesQuantity"/>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <label>物品退换货理由：</label>-->
+<!--                                <input type="text" name="reasonRandc"/>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <label>退换货损耗(第一单位)：</label>-->
+<!--                                <input type="text" name="lossQuantity"/>-->
+<!--                            </li>-->
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+<!--            <div class="btn-group-sm" id="toolbar" role="group">-->
+<!--                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="sales:detail:add">-->
+<!--                    <i class="fa fa-plus"></i> 添加-->
+<!--                </a>-->
+<!--                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="sales:detail:edit">-->
+<!--                    <i class="fa fa-edit"></i> 修改-->
+<!--                </a>-->
+<!--                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="sales:detail:remove">-->
+<!--                    <i class="fa fa-remove"></i> 删除-->
+<!--                </a>-->
+<!--                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="sales:detail:export">-->
+<!--                    <i class="fa fa-download"></i> 导出-->
+<!--                </a>-->
+<!--            </div>-->
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('sales:detail:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('sales:detail:remove')}]];
+        var exchangeFlag = [[${@permission.hasPermi('sales:detail:exchange')}]];
+        var returnFlag = [[${@permission.hasPermi('sales:detail:return')}]];
+        var salesStatusDatas = [[${@dict.getType('sales_detail_status')}]];
+        var prefix = ctx + "sales/detail";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "售卖明细查询",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'salesId',
+                    title: '售卖明细ID',
+                    visible: false
+                },
+                {
+                    field: 'goodsName',
+                    title: '物品名称'
+                },
+                {
+                    field: 'goodsAlias',
+                    title: '物品别名',
+                    visible: false
+                },
+                {
+                    field: 'goodsCode',
+                    title: '物品单号'
+                },
+                {
+                    field: 'salesCode',
+                    title: '售卖明细单号',
+                    visible: false
+                },
+                {
+                    field: 'salesCodeUplevel',
+                    title: '上级单号'
+                },
+                {
+                    field: 'salesCodeBundle',
+                    title: '捆绑单号'
+                },
+                {
+                    field: 'salesDate',
+                    title: '售卖时间'
+                },
+                {
+                    field: 'updateDate',
+                    title: '物品更新时间',
+                    visible: false
+                },
+                {
+                    field: 'purchaserId',
+                    title: '购买人id'
+                },
+                {
+                    field: 'salesQuantity',
+                    title: '(数量|单价)',
+                    formatter : function (value, row, index) {
+                        var dataList = value.split(">");
+                        return dataList[0] + " | " + dataList[1]
+                    },
+                    align: "center"
+                },
+                {
+                    field: 'lossQuantity',
+                    title: '退换货损耗',
+                    visible: false,
+                },
+                {
+                    field: 'reasonRandc',
+                    title: '物品退换货理由',
+                    visible: false
+                },
+                {
+                    field: 'salesStatus',
+                    title: '售卖类型',
+                    formatter: function(value, row, index) {
+                       return $.table.selectDictLabel(salesStatusDatas, value);
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        // actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.salesId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        // actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.salesId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        // 已经退货肯定不能显示
+                        if (row.salesStatus != 3) {
+                            actions.push('<a class="btn btn-primary btn-xs ' + exchangeFlag + '" href="javascript:void(0)" onclick="exchangeGoods(\'' + row.salesId + '\')"><i class="fa fa-refresh"></i>换货</a>&nbsp;');
+                            actions.push('<a class="btn btn-success btn-xs ' + returnFlag + '" href="javascript:void(0)" onclick="returnGoods(\'' + row.salesId + '\')"><i class="fa fa-exchange"></i>退货</a>');
+                        }
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+
+        // 退货按钮
+        function returnGoods(salesId) {
+            $.modal.open("退货", prefix + "/returnButton/" + salesId, 600, 230);
+        }
+
+        // 换货按钮
+        function exchangeGoods(salesId) {
+            $.modal.open("换货", prefix + "/exchangeButton/" + salesId, 600, 230);
+        }
+
+
+
+
+
+
+    </script>
+</body>
+</html>

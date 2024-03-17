@@ -1,6 +1,8 @@
 package com.liuqi.management.mapper;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.liuqi.management.domain.LedgerGoods;
 
 /**
@@ -9,7 +11,7 @@ import com.liuqi.management.domain.LedgerGoods;
  * @author liuqi
  * @date 2024-03-06
  */
-public interface LedgerGoodsMapper
+public interface LedgerGoodsMapper extends BaseMapper<LedgerGoods>
 {
     /**
      * 查询商品台账信息

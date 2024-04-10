@@ -25,7 +25,7 @@ com.liuqi
 ├── conveniencestore-procure     // 物品采购模块
 ├── conveniencestore-management  // 商品管理模块
 ├── conveniencestore-sales       // 售卖模块
-├── conveniencestore-      // 其他模块
+├── conveniencestore-analysis    // 分析模块
 ├── conveniencestore-      // 其他模块
 ├── conveniencestore-      // 其他模块
 ├── conveniencestore-      // 其他模块

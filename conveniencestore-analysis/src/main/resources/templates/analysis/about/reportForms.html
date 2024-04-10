@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('分析展示')" />
+    <script src="../../../static/js/echarts.js" type="text/javascript"></script>
+    <script src="/js/echarts.min.js" type="text/javascript"></script>
+    <style type="text/css">
+        .box {
+            border: 2px solid #efdfba;
+            /*width: 800px;
+            height: 400px;*/
+            width: 100%;
+            height: 100%;
+            padding: 5px;
+            background: #eeeae0;
+        }
+        .box .div1 {
+            position: relative;
+            /*width: 400px;
+            height: 200px;*/
+            width: 45%;
+            height: 45%;
+            float: left;
+        }
+        .box .div2 {
+            position: relative;
+            width: 800px;
+            height: 3px;
+            top:50%;
+            height: 1px;
+            background: linear-gradient(90deg, #f8eb8f, #e8d8b3, #f8eb8f);
+        }
+        .box .div3 {
+            position: relative;
+            width: 1px;
+            height: 400px;
+            left:50%;
+            background: linear-gradient(0deg,  #f8eb8f, #f5d07b, #f8eb8f);
+        }
+        .main {
+            position: relative;
+            margin-top: 5%;
+            margin-left: 10%;
+            width: 120%;
+            height: 120%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <div class='div1'>
+            <div class="main" id="main1" style="width: 100%;height:100%;"></div>
+        </div>
+        <div class='div1'>
+            <div class="main" id="main2" style="width: 100%;height:100%;"></div>
+        </div>
+        <div class='div1'>
+            <div class="main" id="main3" style="width: 100%;height:100%;"></div>
+        </div>
+        <div class='div1'>
+            <div class="main" id="main4" style="width: 100%;height:100%;"></div>
+        </div>
+
+
+
+        <div class='div2'></div>
+        <div class='div3'></div>
+    </div>
+
+
+
+
+
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+
+        // 基于准备好的dom，初始化echarts实例
+        var myChart1 = echarts.init(document.getElementById('main1'));
+        var myChart2 = echarts.init(document.getElementById('main2'));
+        var myChart3 = echarts.init(document.getElementById('main3'));
+        var myChart4 = echarts.init(document.getElementById('main4'));
+
+        // 指定图表的配置项和数据
+        var option1 = {
+            title: {
+                text: 'ECharts 入门示例'
+            },
+            tooltip: {},
+            legend: {
+                data: ['销量']
+            },
+            xAxis: {
+                data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
+            },
+            yAxis: {},
+            series: [
+                {
+                    name: '销量',
+                    type: 'bar',
+                    data: [5, 20, 36, 10, 10, 20]
+                }
+            ]
+        };
+
+        var option2 = {
+            legend: {},
+            tooltip: {},
+            dataset: {
+                dimensions: ['product', '2015', '2016', '2017'],
+                source: [
+                    { product: 'Matcha Latte', 2015: 43.3, 2016: 85.8, 2017: 93.7 },
+                    { product: 'Milk Tea', 2015: 83.1, 2016: 73.4, 2017: 55.1 },
+                    { product: 'Cheese Cocoa', 2015: 86.4, 2016: 65.2, 2017: 82.5 },
+                    { product: 'Walnut Brownie', 2015: 72.4, 2016: 53.9, 2017: 39.1 }
+                ]
+            },
+            xAxis: { type: 'category' },
+            yAxis: {},
+            // Declare several bar series, each will be mapped
+            // to a column of dataset.source by default.
+            series: [{ type: 'bar' }, { type: 'bar' }, { type: 'bar' }]
+        };
+
+        var option3 = {
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                top: '5%',
+                left: 'center'
+            },
+            series: [
+                {
+                    name: 'Access From',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    center: ['50%', '70%'],
+                    // adjust the start and end angle
+                    startAngle: 180,
+                    endAngle: 360,
+                    data: [
+                        { value: 1048, name: 'Search Engine' },
+                        { value: 735, name: 'Direct' },
+                        { value: 580, name: 'Email' },
+                        { value: 484, name: 'Union Ads' },
+                        { value: 300, name: 'Video Ads' }
+                    ]
+                }
+            ]
+        };
+
+        var option4 = {
+            title: {
+                text: ''
+            },
+            legend: {
+                data: ['Allocated Budget', 'Actual Spending']
+            },
+            radar: {
+                // shape: 'circle',
+                indicator: [
+                    { name: 'Sales', max: 6500 },
+                    { name: 'Administration', max: 16000 },
+                    { name: 'Information Technology', max: 30000 },
+                    { name: 'Customer Support', max: 38000 },
+                    { name: 'Development', max: 52000 },
+                    { name: 'Marketing', max: 25000 }
+                ]
+            },
+            series: [
+                {
+                    name: 'Budget vs spending',
+                    type: 'radar',
+                    data: [
+                        {
+                            value: [4200, 3000, 20000, 35000, 50000, 18000],
+                            name: 'Allocated Budget'
+                        },
+                        {
+                            value: [5000, 14000, 28000, 26000, 42000, 21000],
+                            name: 'Actual Spending'
+                        }
+                    ]
+                }
+            ]
+        };
+
+
+
+
+
+
+
+
+
+
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart1.setOption(option1);
+        myChart2.setOption(option2);
+        myChart3.setOption(option3);
+        myChart4.setOption(option4);
+
+
+
+    </script>
+</body>
+</html>

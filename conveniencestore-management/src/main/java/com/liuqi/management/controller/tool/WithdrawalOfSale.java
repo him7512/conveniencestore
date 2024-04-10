@@ -33,7 +33,7 @@ public class WithdrawalOfSale {
     public String withdrawalOfSale(String goodsCode, Long priceFires, Long salesNumber) {
 
         Long shouldIncreseFirstQuantity = salesNumber;          // 应该增加的物品第一数量
-        Long shouldIncreseSecondQuantity = 0L;                  // 应该增加的物品第二数量
+        Double shouldIncreseSecondQuantity = 0.0;                  // 应该增加的物品第二数量
         Long shouldReduceProfit = priceFires * salesNumber;     // 应该减少的商品收益
         LambdaUpdateWrapper<LedgerGoods> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
 
@@ -50,10 +50,10 @@ public class WithdrawalOfSale {
         if (!Objects.isNull(ledgerGoods.getSecondQuantityNow())) {
             secondQuantity = ledgerGoods.getSecondQuantityNow();
             // 计算第一数量与第二数量比值
-            Long proportion = firstQuantity / secondQuantity;
+            Double proportion = firstQuantity / Double.valueOf(secondQuantity);
             // 由第一数量计算得到应增加第二数量的值
             shouldIncreseSecondQuantity = (shouldIncreseFirstQuantity + firstQuantity) / proportion - secondQuantity;
-            secondQuantityNow = secondQuantity + shouldIncreseSecondQuantity;
+            secondQuantityNow = secondQuantity + shouldIncreseSecondQuantity.longValue();
             lambdaUpdateWrapper.set(LedgerGoods::getSecondQuantityNow, secondQuantityNow);
         }
 

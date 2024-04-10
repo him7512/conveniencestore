@@ -86,6 +86,12 @@
             <artifactId>conveniencestore-sales</artifactId>
         </dependency>
 
+        <!-- 分析模块-->
+        <dependency>
+            <groupId>com.liuqi</groupId>
+            <artifactId>conveniencestore-analysis</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

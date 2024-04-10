@@ -174,12 +174,12 @@ public class LedgerGoodsServiceImpl extends ServiceImpl<LedgerGoodsMapper, Ledge
         Long firstQuantityNow = ledgerGoods.getFirstQuantityNow();  // 第一数量
         Long secondQuantityNow = ledgerGoods.getSecondQuantityNow();    // 第二数量
         // 计算第一数量与第二数量的比例
-        Long proportion = firstQuantityNow / secondQuantityNow;
+        Double proportion = firstQuantityNow / Double.valueOf(secondQuantityNow);
         // 第二数量计算及写入(只要一个为空就不能算)
         if (!Objects.isNull(ledgerGoods.getSecondQuantityNow()) && !Objects.isNull(ledgerGoods.getSecondMeasurement())) {
             // 第二数量应该减去：
-            Long numSecond = secondQuantityNow - (firstQuantityNow - Long.valueOf(salesQuantity)) / proportion;
-            secondQuantityNow -= numSecond;
+            Double numSecond = secondQuantityNow - (firstQuantityNow - Long.valueOf(salesQuantity)) / proportion;
+            secondQuantityNow = secondQuantityNow - numSecond.longValue();
             ledgerGoods.setSecondQuantityNow(secondQuantityNow);    // 写入第二物品数量
         }
         // 第一数量计算及写入
@@ -193,9 +193,9 @@ public class LedgerGoodsServiceImpl extends ServiceImpl<LedgerGoodsMapper, Ledge
             ledgerGoods.setGoodsStatus("3");    // 写入商品售卖情况：部分售出
         }
         ledgerGoods.setFirstQuantityNow(firstQuantityNow);  // 写入现物品第一数量
-        ledgerGoodsMapper.updateLedgerGoods(ledgerGoods);
-        // 增加售卖明细
-        salesDetailsService.inSales(ledgerId, goodsCode, salesQuantity, type, ledgerGoods.getGoodsName(), ledgerGoods.getGoodsAlias(), consumerId, String.valueOf(priceFirst));
+//        ledgerGoodsMapper.updateLedgerGoods(ledgerGoods);
+//        // 增加售卖明细
+//        salesDetailsService.inSales(ledgerId, goodsCode, salesQuantity, type, ledgerGoods.getGoodsName(), ledgerGoods.getGoodsAlias(), consumerId, String.valueOf(priceFirst));
 
         // 根据商品活动捆绑销售商品单号进行售卖(只有外售才考虑捆绑销售)
         if (!Objects.isNull(ledgerGoods.getBundleSellCode())) {
@@ -223,12 +223,12 @@ public class LedgerGoodsServiceImpl extends ServiceImpl<LedgerGoodsMapper, Ledge
                     Long firstQuantityNowTem = ledgerGoodsTem.getFirstQuantityNow();  // 第一数量
                     Long secondQuantityNowTem = ledgerGoodsTem.getSecondQuantityNow();    // 第二数量
                     // 计算第一数量与第二数量的比例
-                    Long proportionTem = firstQuantityNowTem / secondQuantityNowTem;
+                    Double proportionTem = firstQuantityNowTem / Double.valueOf(secondQuantityNowTem);
                     // 第二数量计算及写入(只要一个为空就不能算)
                     if (!Objects.isNull(ledgerGoodsTem.getSecondQuantityNow()) && !Objects.isNull(ledgerGoodsTem.getSecondMeasurement())) {
                         // 第二数量应该减去：
-                        Long numSecondTem = secondQuantityNowTem - (firstQuantityNowTem - Long.valueOf(bundleSalesQuantity)) / proportionTem;
-                        secondQuantityNowTem -= numSecondTem;
+                        Double numSecondTem = secondQuantityNowTem - (firstQuantityNowTem - Long.valueOf(bundleSalesQuantity)) / proportionTem;
+                        secondQuantityNowTem = secondQuantityNow - numSecondTem.longValue();
                         ledgerGoodsTem.setSecondQuantityNow(secondQuantityNowTem);    // 写入第二物品数量
                     }
                     // 第一数量计算及写入
@@ -246,6 +246,9 @@ public class LedgerGoodsServiceImpl extends ServiceImpl<LedgerGoodsMapper, Ledge
                     // 增加售卖明细
                     salesDetailsService.bundleSales(ledgerGoodsTem.getGoodsCode(), ledgerGoodsTem.getGoodsName(), ledgerGoodsTem.getGoodsAlias(), String.valueOf(bundleSalesQuantity), goodsCode, consumerId);
                 }
+                ledgerGoodsMapper.updateLedgerGoods(ledgerGoods);
+                // 增加售卖明细
+                salesDetailsService.inSales(ledgerId, goodsCode, salesQuantity, type, ledgerGoods.getGoodsName(), ledgerGoods.getGoodsAlias(), consumerId, String.valueOf(priceFirst));
 
             }
         }
